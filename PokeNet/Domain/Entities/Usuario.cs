@@ -23,27 +23,31 @@ namespace PokeNet.Domain.Entities
         [BsonRepresentation(BsonType.String)]
         public Role Role { get; set; }
 
-        public Usuario(string nome, string email, string senha, Role role)
+        [BsonElement("time")]
+        public List<string> Time { get; set; } = new(); 
+
+        public Usuario(string nome, string email, string senha, Role role, List<string> time)
         {
             Nome = nome;
             Email = email;
             Senha = senha;
             Role = role;
+            Time = time ?? new List<string>();
 
         }
 
-        public void Atualizar(string nome, string email, string senha, Role role)
+        public void Atualizar(string nome, string email, string senha, Role role, List<string> time)
         {
             Nome = nome;
             Email = email;
             Senha = senha;
             Role = role;
-
+            Time = time ?? new List<string>();
         }
 
-        internal static Usuario Create(string nome, string email, string senha, Role role)
+        internal static Usuario Create(string nome, string email, string senha, Role role, List<string> time)
         {
-            return new Usuario(nome, email, senha, role);
+            return new Usuario(nome, email, senha, role, time ?? new List<string>());
         }
 
         public Usuario() { }

@@ -15,9 +15,9 @@ namespace PokeNet.Application.DTO.Response
 
         [EnumDataType(typeof(Role))]
         public Role Role { get; set; }
+        public List<PokemonTimeResponse> Time { get; set; }
 
-
-        public static UsuarioResponse FromEntity(Usuario u)
+        public static UsuarioResponse FromEntity(Usuario u, List<PokemonTimeResponse> time)
         {
             return new UsuarioResponse
             {
@@ -25,7 +25,8 @@ namespace PokeNet.Application.DTO.Response
                 Nome = u.Nome,
                 Email = u.Email,
                 Senha = u.Senha,
-                Role = u.Role
+                Role = u.Role,
+                Time = time
             };
         }
     }

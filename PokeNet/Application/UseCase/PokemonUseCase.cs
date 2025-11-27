@@ -62,7 +62,13 @@ namespace PokeNet.Application.UseCase
         private string ConverterPeso(long pesoHg)
         {
             double kg = pesoHg * 0.1;
-            return $"{kg:0.1} kg";
+
+            if (kg < 1000)
+                return $"{kg} kg";
+
+            double t = kg / 1000;
+            return $"{t:0.00} t";
+
         }
     }
 }

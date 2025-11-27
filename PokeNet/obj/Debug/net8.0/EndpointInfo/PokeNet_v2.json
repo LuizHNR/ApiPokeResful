@@ -383,6 +383,31 @@
         },
         "additionalProperties": false
       },
+      "PokemonTimeResponse": {
+        "type": "object",
+        "properties": {
+          "numero": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nome": {
+            "type": "string",
+            "nullable": true
+          },
+          "tipos": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "sprite": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "ProblemDetails": {
         "type": "object",
         "properties": {
@@ -434,6 +459,13 @@
           },
           "role": {
             "$ref": "#/components/schemas/Role"
+          },
+          "time": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -459,6 +491,13 @@
           },
           "role": {
             "$ref": "#/components/schemas/Role"
+          },
+          "time": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PokemonTimeResponse"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
