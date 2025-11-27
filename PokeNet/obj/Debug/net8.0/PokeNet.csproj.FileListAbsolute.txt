@@ -1,3 +1,12 @@
+C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.csproj.AssemblyReference.cache
+C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.AssemblyInfoInputs.cache
+C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.AssemblyInfo.cs
+C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.csproj.CoreCompileInputs.cache
+C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.sourcelink.json
 C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\bin\Debug\net8.0\appsettings.json
 C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\bin\Debug\net8.0\PokeNet.staticwebassets.endpoints.json
@@ -128,14 +137,6 @@ C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\bin\Debug\net8.0\zh-Hant\Micro
 C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\bin\Debug\net8.0\runtimes\linux\native\libmongocrypt.so
 C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\bin\Debug\net8.0\runtimes\osx\native\libmongocrypt.dylib
 C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\bin\Debug\net8.0\runtimes\win\native\mongocrypt.dll
-C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.csproj.AssemblyReference.cache
-C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\rpswa.dswa.cache.json
-C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.AssemblyInfoInputs.cache
-C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.AssemblyInfo.cs
-C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.csproj.CoreCompileInputs.cache
-C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\PokeNet.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\rjimswa.dswa.cache.json
 C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 C:\Users\Passos Magicos\Documents\PokeNet\PokeNet\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json

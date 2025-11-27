@@ -8,8 +8,10 @@ namespace PokeNet.Application.DTO.Request
     {
         public string Nome { get; set; }
 
+        /// <example>email@gmail.com</example>
         public string Email { get; set; }
 
+        /// <example>SenhaForte@010203</example>
         public string Senha { get; set; }
 
         [EnumDataType(typeof(Role))]

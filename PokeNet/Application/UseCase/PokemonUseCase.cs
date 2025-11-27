@@ -16,8 +16,13 @@ namespace PokeNet.Application.UseCase
 
         public async Task<List<PokemonListaResponse>> BuscarTodos(int page, int pageSize)
         {
-            return await _api.BuscarTodos(page, pageSize);
+            var lista = await _api.BuscarTodos(page, pageSize);
+
+            return lista;
         }
+
+
+
 
         public async Task<PokemonApiDetailResponse?> BuscarPokemon(string nomeOuNumero)
         {
@@ -32,7 +37,9 @@ namespace PokeNet.Application.UseCase
                 Nome = pokemon.Nome,
                 Altura = ConverterAltura(pokemon.Altura),
                 Peso = ConverterPeso(pokemon.Peso),
-                Tipos = pokemon.Tipos
+                Tipos = pokemon.Tipos,
+                Evolucoes = pokemon.Evolucoes,
+                Sprite = pokemon.Sprites
             };
         }
 

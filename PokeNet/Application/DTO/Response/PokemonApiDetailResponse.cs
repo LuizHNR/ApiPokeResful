@@ -1,4 +1,6 @@
-﻿namespace PokeNet.Application.DTO.Response
+﻿using PokeNet.Application.DTO.External;
+
+namespace PokeNet.Application.DTO.Response
 {
     public class PokemonApiDetailResponse
     {
@@ -7,6 +9,8 @@
         public string Altura { get; set; } = "";
         public string Peso { get; set; } = "";
         public List<string> Tipos { get; set; } = new();
+        public List<PokemonEvolucaoDTO> Evolucoes { get; set; } = new();
+        public PokemonSprite Sprite { get; set; } = new();
     }
 
 }
