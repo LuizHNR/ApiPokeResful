@@ -91,6 +91,7 @@ namespace PokeNet.Application.Services
                     CryUrl = cryUrl,
                     Altura = detalhe.Height,
                     Peso = detalhe.Weight,
+                    Habilidades = detalhe.Abilities.Select(a => a.Ability.Name).ToList(),
                     Tipos = detalhe.Types.Select(t => t.Type.Name).ToList(),
                     Evolucoes = evolucoes,
                     Sprites = detalhe.Sprites

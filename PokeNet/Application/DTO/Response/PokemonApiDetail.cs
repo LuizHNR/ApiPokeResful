@@ -6,6 +6,7 @@
         public string Name { get; set; } = "";
         public int Height { get; set; }
         public int Weight { get; set; }
+        public List<PokemonAbility> Abilities { get; set; } = new();
         public List<PokemonTypeSlot> Types { get; set; } = new();
         public List<PokemonEvolucaoDTO> Evolucoes { get; set; } = new();
         public PokemonSprite Sprites { get; set; } = new();
@@ -21,6 +22,37 @@
     {
         public string Name { get; set; } = "";
     }
+
+
+
+
+
+
+
+    public class PokemonAbility
+    {
+        public AbilityInfo Ability { get; set; } = new();
+        public bool Is_Hidden { get; set; }
+        public int Slot { get; set; }
+
+    }
+
+
+    public class AbilityInfo
+    {
+        public string Name { get; set; } = "";
+        public string Url { get; set; } = "";
+    }
+
+
+
+
+
+
+
+
+
+
 
     public class PokemonSprite
     {

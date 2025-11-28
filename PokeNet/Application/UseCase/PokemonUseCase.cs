@@ -40,6 +40,7 @@ namespace PokeNet.Application.UseCase
                 CryUrl = pokemon.CryUrl,
                 Altura = ConverterAltura(pokemon.Altura),
                 Peso = ConverterPeso(pokemon.Peso),
+                Habilidades = pokemon.Habilidades,
                 Tipos = pokemon.Tipos,
                 Multipliers = multipliers,
                 Evolucoes = pokemon.Evolucoes,

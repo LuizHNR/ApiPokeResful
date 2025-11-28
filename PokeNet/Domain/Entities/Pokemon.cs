@@ -9,6 +9,7 @@ namespace PokeNet.Domain.Entities
         public string CryUrl { get; set; } = "";
         public long Altura { get; set; }
         public long Peso { get; set; }
+        public List<string> Habilidades { get; set; } = new();
         public List<string> Tipos { get; set; } = new();
         public List<PokemonEvolucaoDTO> Evolucoes { get; set; } = new();
 
