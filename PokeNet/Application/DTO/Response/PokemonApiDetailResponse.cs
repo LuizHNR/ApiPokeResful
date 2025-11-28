@@ -10,6 +10,8 @@ namespace PokeNet.Application.DTO.Response
         public string Altura { get; set; } = "";
         public string Peso { get; set; } = "";
         public List<string> Tipos { get; set; } = new();
+        public PokemonMultipliersResponse Multipliers { get; set; } = new();
+
         public List<PokemonEvolucaoDTO> Evolucoes { get; set; } = new();
         public PokemonSprite Sprite { get; set; } = new();
     }

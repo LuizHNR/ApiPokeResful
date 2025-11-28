@@ -163,5 +163,68 @@ namespace PokeNet.Application.Services
 
 
 
+        private async Task<Dictionary<string, double>> ObterMultiplicadoresAsync(List<string> tiposPokemon)
+        {
+            var multipliers = new Dictionary<string, double>
+            {
+                ["normal"] = 1,
+                ["fire"] = 1,
+                ["water"] = 1,
+                ["electric"] = 1,
+                ["grass"] = 1,
+                ["ice"] = 1,
+                ["fighting"] = 1,
+                ["poison"] = 1,
+                ["ground"] = 1,
+                ["flying"] = 1,
+                ["psychic"] = 1,
+                ["bug"] = 1,
+                ["rock"] = 1,
+                ["ghost"] = 1,
+                ["dragon"] = 1,
+                ["dark"] = 1,
+                ["steel"] = 1,
+                ["fairy"] = 1
+            };
+
+            foreach (var tipo in tiposPokemon)
+            {
+                var typeData = await _http.GetFromJsonAsync<TypeDetailResponse>($"type/{tipo}");
+
+                foreach (var d in typeData.Damage_Relations.Double_Damage_From)
+                    multipliers[d.Name] *= 2;
+
+                foreach (var h in typeData.Damage_Relations.Half_Damage_From)
+                    multipliers[h.Name] *= 0.5;
+
+                foreach (var n in typeData.Damage_Relations.No_Damage_From)
+                    multipliers[n.Name] = 0;
+            }
+
+            return multipliers;
+        }
+
+
+        public async Task<PokemonMultipliersResponse> ObterFraquezasEVantagens(List<string> tipos)
+        {
+            var all = await ObterMultiplicadoresAsync(tipos);
+
+            return new PokemonMultipliersResponse
+            {
+                Fraquezas = all
+                    .Where(x => x.Value > 1)
+                    .ToDictionary(x => x.Key, x => x.Value),
+
+                Resistencias = all
+                    .Where(x => x.Value < 1 && x.Value > 0)
+                    .ToDictionary(x => x.Key, x => x.Value),
+
+                Imunidades = all
+                    .Where(x => x.Value == 0)
+                    .ToDictionary(x => x.Key, x => x.Value)
+            };
+        }
+
+
     }
 }

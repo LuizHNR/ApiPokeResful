@@ -31,6 +31,8 @@ namespace PokeNet.Application.UseCase
             if (pokemon == null)
                 return null;
 
+            var multipliers = await _api.ObterFraquezasEVantagens(pokemon.Tipos);
+
             return new PokemonApiDetailResponse
             {
                 Numero = pokemon.Numero,
@@ -39,10 +41,12 @@ namespace PokeNet.Application.UseCase
                 Altura = ConverterAltura(pokemon.Altura),
                 Peso = ConverterPeso(pokemon.Peso),
                 Tipos = pokemon.Tipos,
+                Multipliers = multipliers,
                 Evolucoes = pokemon.Evolucoes,
                 Sprite = pokemon.Sprites
             };
         }
+
 
         private string ConverterAltura(long alturaDm)
         {

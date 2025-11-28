@@ -1,12 +1,71 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\Passos Magicos\\Documents\\PokeNet\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{20E5CD88-9F41-AF7F-B21D-8237E8E49D45}|PokeNet\\PokeNet.csproj|c:\\users\\passos magicos\\documents\\pokenet\\pokenet\\domain\\entities\\pokemon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20E5CD88-9F41-AF7F-B21D-8237E8E49D45}|PokeNet\\PokeNet.csproj|solutionrelative:pokenet\\domain\\entities\\pokemon.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20E5CD88-9F41-AF7F-B21D-8237E8E49D45}|PokeNet\\PokeNet.csproj|c:\\users\\passos magicos\\documents\\pokenet\\pokenet\\application\\dto\\external\\pokemonevolucaodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20E5CD88-9F41-AF7F-B21D-8237E8E49D45}|PokeNet\\PokeNet.csproj|solutionrelative:pokenet\\application\\dto\\external\\pokemonevolucaodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20E5CD88-9F41-AF7F-B21D-8237E8E49D45}|PokeNet\\PokeNet.csproj|c:\\users\\passos magicos\\documents\\pokenet\\pokenet\\application\\dto\\external\\pokemonevolution.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20E5CD88-9F41-AF7F-B21D-8237E8E49D45}|PokeNet\\PokeNet.csproj|solutionrelative:pokenet\\application\\dto\\external\\pokemonevolution.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 456,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PokemonEvolucaoDTO.cs",
+              "DocumentMoniker": "C:\\Users\\Passos Magicos\\Documents\\PokeNet\\PokeNet\\Application\\DTO\\External\\PokemonEvolucaoDTO.cs",
+              "RelativeDocumentMoniker": "PokeNet\\Application\\DTO\\External\\PokemonEvolucaoDTO.cs",
+              "ToolTip": "C:\\Users\\Passos Magicos\\Documents\\PokeNet\\PokeNet\\Application\\DTO\\External\\PokemonEvolucaoDTO.cs",
+              "RelativeToolTip": "PokeNet\\Application\\DTO\\External\\PokemonEvolucaoDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T15:46:22.669Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PokemonEvolution.cs",
+              "DocumentMoniker": "C:\\Users\\Passos Magicos\\Documents\\PokeNet\\PokeNet\\Application\\DTO\\External\\PokemonEvolution.cs",
+              "RelativeDocumentMoniker": "PokeNet\\Application\\DTO\\External\\PokemonEvolution.cs",
+              "ToolTip": "C:\\Users\\Passos Magicos\\Documents\\PokeNet\\PokeNet\\Application\\DTO\\External\\PokemonEvolution.cs",
+              "RelativeToolTip": "PokeNet\\Application\\DTO\\External\\PokemonEvolution.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T15:46:21.269Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Pokemon.cs",
+              "DocumentMoniker": "C:\\Users\\Passos Magicos\\Documents\\PokeNet\\PokeNet\\Domain\\Entities\\Pokemon.cs",
+              "RelativeDocumentMoniker": "PokeNet\\Domain\\Entities\\Pokemon.cs",
+              "ToolTip": "C:\\Users\\Passos Magicos\\Documents\\PokeNet\\PokeNet\\Domain\\Entities\\Pokemon.cs",
+              "RelativeToolTip": "PokeNet\\Domain\\Entities\\Pokemon.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-28T15:45:04.014Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
