@@ -35,6 +35,7 @@ namespace PokeNet.Application.UseCase
             {
                 Numero = pokemon.Numero,
                 Nome = pokemon.Nome,
+                CryUrl = pokemon.CryUrl,
                 Altura = ConverterAltura(pokemon.Altura),
                 Peso = ConverterPeso(pokemon.Peso),
                 Tipos = pokemon.Tipos,
@@ -63,12 +64,23 @@ namespace PokeNet.Application.UseCase
         {
             double kg = pesoHg * 0.1;
 
-            if (kg < 1000)
-                return $"{kg} kg";
+            // Se for menor que 1 kg, converte para gramas
+            if (kg < 1)
+            {
+                double g = kg * 1000;
+                return $"{g:0} g";
+            }
 
+            // Se for menor que 1000 kg, fica em kg
+            if (kg < 1000)
+            {
+                return $"{kg:0.0} kg";
+            }
+
+            // Acima de 1000 kg vira toneladas
             double t = kg / 1000;
             return $"{t:0.00} t";
-
         }
+
     }
 }

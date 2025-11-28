@@ -82,10 +82,13 @@ namespace PokeNet.Application.Services
                 var baseName = detalhe.Name.Split('-')[0];
                 var finalName = char.ToUpper(baseName[0]) + baseName[1..];
 
+                string cryUrl = $"https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/{detalhe.Id}.ogg";
+
                 return new Pokemon
                 {
                     Numero = detalhe.Id,
                     Nome = finalName,
+                    CryUrl = cryUrl,
                     Altura = detalhe.Height,
                     Peso = detalhe.Weight,
                     Tipos = detalhe.Types.Select(t => t.Type.Name).ToList(),
