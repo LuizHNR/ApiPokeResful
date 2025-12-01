@@ -23,7 +23,6 @@ namespace PokeNet.Controllers.v2
         /// </summary>
         /// <param name="page">Número da página (default = 1)</param>
         /// <param name="pageSize">Quantidade de itens por página (default = 20)</param>
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> BuscarTodos([FromQuery] int page = 1,[FromQuery] int pageSize = 20)
         {
@@ -55,7 +54,6 @@ namespace PokeNet.Controllers.v2
         /// Busca um Pokémon pelo nome ou número.
         /// </summary>
         /// <param name="id">id do registro</param>
-        [Authorize]
         [HttpGet("{nomeOuNumero}")]
         public async Task<IActionResult> BuscarPokemon(string nomeOuNumero)
         {

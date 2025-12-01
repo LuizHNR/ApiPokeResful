@@ -1,4 +1,5 @@
 ﻿using PokeNet.Application.DTO.External;
+using PokeNet.Application.DTO.Response;
 
 namespace PokeNet.Domain.Entities
 {
@@ -14,5 +15,8 @@ namespace PokeNet.Domain.Entities
         public List<PokemonEvolucaoDTO> Evolucoes { get; set; } = new();
 
         public PokemonSprite Sprites { get; set; } = new();
+
+        public List<PokemonStatResponse> Stats { get; set; } = new();
+
     }
 }

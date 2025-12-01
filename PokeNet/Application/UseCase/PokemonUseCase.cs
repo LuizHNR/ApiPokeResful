@@ -44,7 +44,8 @@ namespace PokeNet.Application.UseCase
                 Tipos = pokemon.Tipos,
                 Multipliers = multipliers,
                 Evolucoes = pokemon.Evolucoes,
-                Sprite = pokemon.Sprites
+                Sprite = pokemon.Sprites,
+                Stats = pokemon.Stats
             };
         }
 

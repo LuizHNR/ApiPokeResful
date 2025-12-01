@@ -94,7 +94,11 @@ namespace PokeNet.Application.Services
                     Habilidades = detalhe.Abilities.Select(a => a.Ability.Name).ToList(),
                     Tipos = detalhe.Types.Select(t => t.Type.Name).ToList(),
                     Evolucoes = evolucoes,
-                    Sprites = detalhe.Sprites
+                    Sprites = detalhe.Sprites,
+                    Stats = detalhe.Stats.Select(s => new PokemonStatResponse{
+                        Nome = s.Stat.Name,Valor = s.StatusBase
+                    }).ToList(),
+
                 };
             }
             catch
