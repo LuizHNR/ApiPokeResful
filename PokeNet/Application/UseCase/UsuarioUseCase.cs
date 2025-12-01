@@ -24,7 +24,7 @@ namespace PokeNet.Application.UseCase
                 request.Email,
                 request.Senha,
                 request.Role,
-                request.Time
+                request.Times
             );
 
             await _repository.AddAsync(usuario);
@@ -67,7 +67,7 @@ namespace PokeNet.Application.UseCase
                 request.Email,
                 request.Senha,
                 request.Role,
-                request.Time
+                request.Times
             );
 
             await _repository.UpdateAsync(id, usuario);
@@ -87,23 +87,35 @@ namespace PokeNet.Application.UseCase
 
         private async Task<UsuarioResponse> MapToResponse(Usuario u)
         {
-            var timeDetalhado = new List<PokemonTimeResponse>();
+            var timesDetalhados = new List<TimeResponse>();
 
-            foreach (var pokeEntrada in u.Time)
+            foreach (var time in u.Times)
             {
-                var p = await _pokemonApi.BuscarPokemon(pokeEntrada);
-                if (p == null) continue;
+                var pokemonsDetalhados = new List<PokemonTimeResponse>();
 
-                timeDetalhado.Add(new PokemonTimeResponse
+                foreach (var nomeOuId in time.Pokemons)
                 {
-                    Numero = p.Numero,
-                    Nome = p.Nome,
-                    Tipos = p.Tipos,
-                    Sprite = p.Sprites.front_default
+                    var p = await _pokemonApi.BuscarPokemon(nomeOuId);
+                    if (p == null) continue;
+
+                    pokemonsDetalhados.Add(new PokemonTimeResponse
+                    {
+                        Numero = p.Numero,
+                        Nome = p.Nome,
+                        Tipos = p.Tipos,
+                        Sprite = p.Sprites.front_default
+                    });
+                }
+
+                timesDetalhados.Add(new TimeResponse
+                {
+                    Nome = time.Nome,
+                    Pokemons = pokemonsDetalhados
                 });
             }
 
-            return UsuarioResponse.FromEntity(u, timeDetalhado);
+            return UsuarioResponse.FromEntity(u, timesDetalhados);
         }
+
     }
 }

@@ -17,7 +17,7 @@ namespace PokeNet.Application.DTO.Request
         [EnumDataType(typeof(Role))]
         public Role Role { get; set; }
 
-        public List<string> Time { get; set; }
+        public List<Time> Times { get; set; }
 
     }
 }

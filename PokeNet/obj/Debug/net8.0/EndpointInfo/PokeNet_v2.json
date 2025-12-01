@@ -442,6 +442,40 @@
         ],
         "type": "string"
       },
+      "Time": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "nullable": true
+          },
+          "pokemons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TimeResponse": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "nullable": true
+          },
+          "pokemons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PokemonTimeResponse"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "UsuarioRequest": {
         "type": "object",
         "properties": {
@@ -460,10 +494,10 @@
           "role": {
             "$ref": "#/components/schemas/Role"
           },
-          "time": {
+          "times": {
             "type": "array",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Time"
             },
             "nullable": true
           }
@@ -492,10 +526,10 @@
           "role": {
             "$ref": "#/components/schemas/Role"
           },
-          "time": {
+          "times": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PokemonTimeResponse"
+              "$ref": "#/components/schemas/TimeResponse"
             },
             "nullable": true
           }

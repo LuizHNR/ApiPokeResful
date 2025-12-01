@@ -28,10 +28,6 @@ namespace PokeNet.Application.Validators
             RuleFor(x => x.Role)
                 .IsInEnum().WithMessage("Role inválida.");
 
-            // 🟢 Regra que você pediu — limite de 6 pokémons no time
-            RuleFor(x => x.Time)
-                .Must(lista => lista == null || lista.Count <= 6)
-                .WithMessage("O time não pode ter mais que 6 pokémons.");
         }
     }
 }

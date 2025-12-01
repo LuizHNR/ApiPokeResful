@@ -18,6 +18,8 @@ namespace PokeNet.Infrastructure.Context
 
 
         public IMongoCollection<Usuario> Usuarios => Database.GetCollection<Usuario>("usuarios");
+
+
         public IMongoCollection<T> GetCollection<T>(string collectionName)
         {
             return Database.GetCollection<T>(collectionName);
