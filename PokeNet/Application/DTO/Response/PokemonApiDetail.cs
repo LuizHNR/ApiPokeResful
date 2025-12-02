@@ -87,7 +87,41 @@ namespace PokeNet.Application.DTO.External
     {
         public string front_default { get; set; } = "";
         public string back_default { get; set; } = "";
+
+        public string front_shiny { get; set; } = "";
+        public string back_shiny { get; set; } = "";
     }
 
+
+
+
+
+    public class PokemonSpeciesApi
+    {
+        [JsonPropertyName("flavor_text_entries")]
+        public List<FlavorTextEntry> FlavorTextEntries { get; set; } = new();
+
+        [JsonPropertyName("egg_groups")]
+        public List<EggGroupEntry> EggGroups { get; set; } = new();
+    }
+
+    public class FlavorTextEntry
+    {
+        [JsonPropertyName("flavor_text")]
+        public string FlavorText { get; set; } = "";
+
+        [JsonPropertyName("language")]
+        public LanguageInfo Language { get; set; } = new();
+    }
+
+    public class EggGroupEntry
+    {
+        public string Name { get; set; } = "";
+    }
+
+    public class LanguageInfo
+    {
+        public string Name { get; set; } = "";
+    }
 
 }

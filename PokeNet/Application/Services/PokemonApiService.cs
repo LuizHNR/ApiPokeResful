@@ -79,6 +79,12 @@ namespace PokeNet.Application.Services
 
                 var evolucoes = await BuscarEvolucoes(detalhe.Id);
 
+                // 🔥 Buscar habilidades com descrição
+                var habilidades = await BuscarHabilidades(detalhe);
+
+                // 🔥 Buscar descrição e egg groups
+                var (descricao, eggGroups) = await BuscarDescricaoEEggGroups(detalhe.Id);
+
                 var baseName = detalhe.Name.Split('-')[0];
                 var finalName = char.ToUpper(baseName[0]) + baseName[1..];
 
@@ -91,14 +97,20 @@ namespace PokeNet.Application.Services
                     CryUrl = cryUrl,
                     Altura = detalhe.Height,
                     Peso = detalhe.Weight,
-                    Habilidades = detalhe.Abilities.Select(a => a.Ability.Name).ToList(),
+
+                    Habilidades = habilidades,
+                    Descricao = descricao,
+                    EggGroups = eggGroups,
+
                     Tipos = detalhe.Types.Select(t => t.Type.Name).ToList(),
                     Evolucoes = evolucoes,
                     Sprites = detalhe.Sprites,
-                    Stats = detalhe.Stats.Select(s => new PokemonStatResponse{
-                        Nome = s.Stat.Name,Valor = s.StatusBase
-                    }).ToList(),
 
+                    Stats = detalhe.Stats.Select(s => new PokemonStatResponse
+                    {
+                        Nome = s.Stat.Name,
+                        Valor = s.StatusBase
+                    }).ToList()
                 };
             }
             catch
@@ -106,6 +118,7 @@ namespace PokeNet.Application.Services
                 return null;
             }
         }
+
 
 
 
@@ -230,6 +243,55 @@ namespace PokeNet.Application.Services
             };
         }
 
+
+
+        private async Task<(string descricao, List<string> eggs)> BuscarDescricaoEEggGroups(int id)
+        {
+            var species = await _http.GetFromJsonAsync<PokemonSpeciesApi>($"pokemon-species/{id}");
+
+            if (species == null)
+                return ("", new());
+
+            // Pega a primeira descrição em EN ou PT-BR
+            var entry = species.FlavorTextEntries
+                .FirstOrDefault(x => x.Language.Name == "en");
+
+            string descricao = entry?.FlavorText
+                ?.Replace("\n", " ")
+                ?.Replace("\f", " ")
+                ?? "";
+
+            var eggs = species.EggGroups
+                .Select(e => e.Name)
+                .ToList();
+
+            return (descricao, eggs);
+        }
+
+
+        private async Task<List<PokemonHabilidadeResponse>> BuscarHabilidades(PokemonApiDetail detalhe)
+        {
+            var lista = new List<PokemonHabilidadeResponse>();
+
+            foreach (var ability in detalhe.Abilities)
+            {
+                var data = await _http.GetFromJsonAsync<AbilityDetailResponse>(
+                    ability.Ability.Url
+                );
+
+                var desc = data?.EffectEntries
+                    .FirstOrDefault(e => e.Language.Name == "en")
+                    ?.ShortEffect ?? "";
+
+                lista.Add(new PokemonHabilidadeResponse
+                {
+                    Nome = ability.Ability.Name,
+                    Descricao = desc
+                });
+            }
+
+            return lista;
+        }
 
     }
 }

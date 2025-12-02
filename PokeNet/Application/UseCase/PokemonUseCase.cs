@@ -37,11 +37,13 @@ namespace PokeNet.Application.UseCase
             {
                 Numero = pokemon.Numero,
                 Nome = pokemon.Nome,
+                Descricao = pokemon.Descricao,
                 CryUrl = pokemon.CryUrl,
                 Altura = ConverterAltura(pokemon.Altura),
                 Peso = ConverterPeso(pokemon.Peso),
                 Habilidades = pokemon.Habilidades,
                 Tipos = pokemon.Tipos,
+                EggGroups = pokemon.EggGroups,
                 Multipliers = multipliers,
                 Evolucoes = pokemon.Evolucoes,
                 Sprite = pokemon.Sprites,
