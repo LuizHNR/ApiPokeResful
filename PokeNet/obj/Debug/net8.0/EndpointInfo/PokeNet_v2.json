@@ -365,6 +365,28 @@
           }
         }
       }
+    },
+    "/api/v2/Pokemon/{nomeOuNumero}/movimentos": {
+      "get": {
+        "tags": [
+          "Pokemon"
+        ],
+        "parameters": [
+          {
+            "name": "nomeOuNumero",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
     }
   },
   "components": {

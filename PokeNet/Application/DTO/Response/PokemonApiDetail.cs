@@ -14,6 +14,10 @@ namespace PokeNet.Application.DTO.External
         public PokemonSprite Sprites { get; set; } = new();
 
         public List<PokemonStatsSlot> Stats { get; set; } = new();
+
+        public List<PokemonMoveSlot> Moves { get; set; } = new();
+
+
     }
 
     public class PokemonTypeSlot
@@ -122,6 +126,41 @@ namespace PokeNet.Application.DTO.External
     public class LanguageInfo
     {
         public string Name { get; set; } = "";
+    }
+
+
+
+
+    public class NamedAPIResource
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = "";
+
+        [JsonPropertyName("url")]
+        public string Url { get; set; } = "";
+    }
+
+
+    public class PokemonMoveSlot
+    {
+        [JsonPropertyName("move")]
+        public NamedAPIResource Move { get; set; } = new();
+
+        [JsonPropertyName("version_group_details")]
+        public List<VersionGroupDetail> Version_Group_Details { get; set; } = new();
+    }
+
+
+    public class VersionGroupDetail
+    {
+        [JsonPropertyName("level_learned_at")]
+        public int Level { get; set; }
+
+        [JsonPropertyName("move_learn_method")]
+        public NamedAPIResource MoveLearnMethod { get; set; } = new();
+
+        [JsonPropertyName("version_group")]
+        public NamedAPIResource VersionGroup { get; set; } = new();
     }
 
 }

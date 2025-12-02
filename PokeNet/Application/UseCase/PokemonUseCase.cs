@@ -90,5 +90,12 @@ namespace PokeNet.Application.UseCase
             return $"{t:0.00} t";
         }
 
+
+
+        public async Task<PokemonMovesResponse?> BuscarMovimentos(string nomeOuNumero)
+        {
+            return await _api.BuscarTodosMovimentos(nomeOuNumero);
+        }
+
     }
 }

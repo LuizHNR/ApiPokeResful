@@ -64,5 +64,22 @@ namespace PokeNet.Controllers.v2
 
             return Ok(pokemon);
         }
+
+
+
+        /// <summary>
+        /// Busca movimentos do pokemon.
+        /// </summary>
+        [HttpGet("{nomeOuNumero}/movimentos")]
+        public async Task<IActionResult> BuscarMovimentos(string nomeOuNumero)
+        {
+            var result = await _useCase.BuscarMovimentos(nomeOuNumero);
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+
     }
 }

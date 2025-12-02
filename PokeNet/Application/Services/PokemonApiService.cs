@@ -150,6 +150,11 @@ namespace PokeNet.Application.Services
         }
 
 
+
+
+        //----------------------------
+        // Buscar evoluções
+        //----------------------------
         private void ExtrairEvolucoes(ChainLink link, List<PokemonEvolucaoDTO> lista)
         {
             // extrair número da pokedex a partir da URL da species
@@ -181,6 +186,10 @@ namespace PokeNet.Application.Services
 
 
 
+
+        //----------------------------
+        // Multiplicadores de vantagens
+        //----------------------------
         private async Task<Dictionary<string, double>> ObterMultiplicadoresAsync(List<string> tiposPokemon)
         {
             var multipliers = new Dictionary<string, double>
@@ -223,6 +232,12 @@ namespace PokeNet.Application.Services
         }
 
 
+
+
+
+        //----------------------------
+        // Buscar Fraquezas e vantagens
+        //----------------------------
         public async Task<PokemonMultipliersResponse> ObterFraquezasEVantagens(List<string> tipos)
         {
             var all = await ObterMultiplicadoresAsync(tipos);
@@ -245,6 +260,11 @@ namespace PokeNet.Application.Services
 
 
 
+
+
+        //----------------------------
+        // Buscar descricao do grupo de ovo
+        //----------------------------
         private async Task<(string descricao, List<string> eggs)> BuscarDescricaoEEggGroups(int id)
         {
             var species = await _http.GetFromJsonAsync<PokemonSpeciesApi>($"pokemon-species/{id}");
@@ -269,6 +289,11 @@ namespace PokeNet.Application.Services
         }
 
 
+
+
+        //----------------------------
+        // Buscar habilidades
+        //----------------------------
         private async Task<List<PokemonHabilidadeResponse>> BuscarHabilidades(PokemonApiDetail detalhe)
         {
             var lista = new List<PokemonHabilidadeResponse>();
@@ -291,6 +316,111 @@ namespace PokeNet.Application.Services
             }
 
             return lista;
+        }
+
+
+
+
+
+
+        //----------------------------
+        // Buscar movimentos
+        //----------------------------
+        public async Task<PokemonMovesResponse?> BuscarTodosMovimentos(string nomeOuNumero)
+        {
+            var detalhe = await _http.GetFromJsonAsync<PokemonApiDetail>($"pokemon/{nomeOuNumero.ToLower()}");
+
+            if (detalhe == null)
+                return null;
+
+            var resposta = new PokemonMovesResponse();
+
+            foreach (var moveSlot in detalhe.Moves)
+            {
+                var moveName = moveSlot.Move.Name;
+
+                var moveDetail = await _http.GetFromJsonAsync<MoveDetailResponse>($"move/{moveName}");
+
+                foreach (var version in moveSlot.Version_Group_Details)
+                {
+                    var metodo = version.MoveLearnMethod.Name;
+                    var level = version.Level;
+
+                    switch (metodo)
+                    {
+                        case "level-up":
+
+                            var efeito = moveDetail.EffectEntries
+                                .FirstOrDefault(e => e.Language.Name == "en");
+
+                            resposta.LevelUp.Add(new PokemonLevelUpMove
+                            {
+                                Nome = moveName,
+                                Level = level,
+                                Tipo = moveDetail.type.Name,
+                                Categoria = moveDetail.DamageClass.Name,
+                                Poder = moveDetail.power,
+                                Accuracy = moveDetail.accuracy,
+                                PP = moveDetail.pp,
+                                Efeito = efeito?.Effect ?? "",
+                                EfeitoCurto = efeito?.ShortEffect ?? "",
+                                ChanceEfeito = moveDetail.EffectChance
+                            });
+
+                            break;
+
+
+                        case "machine":
+                            resposta.Machine.Add(MapearMove(moveName, moveDetail));
+                            break;
+
+                        case "tutor":
+                            resposta.Tutor.Add(MapearMove(moveName, moveDetail));
+                            break;
+
+                        case "egg":
+                            resposta.Egg.Add(MapearMove(moveName, moveDetail));
+                            break;
+
+                        default:
+                            resposta.Outros.Add(moveName);
+                            break;
+                    }
+                }
+            }
+
+            resposta.LevelUp = resposta.LevelUp
+                .GroupBy(x => new { x.Nome, x.Level })
+                .Select(g => g.First())
+                .OrderBy(x => x.Level)
+                .ToList();
+
+            resposta.Machine = resposta.Machine.Distinct().ToList();
+            resposta.Tutor = resposta.Tutor.Distinct().ToList();
+            resposta.Egg = resposta.Egg.Distinct().ToList();
+            resposta.Outros = resposta.Outros.Distinct().ToList();
+
+            return resposta;
+        }
+
+
+        private PokemonMoveDetail MapearMove(string nome, MoveDetailResponse move)
+        {
+            var efeito = move.EffectEntries
+                .FirstOrDefault(e => e.Language.Name == "en");
+
+            return new PokemonMoveDetail
+            {
+                Nome = nome,
+                Tipo = move.type.Name,
+                Categoria = move.DamageClass.Name,
+                Poder = move.power,
+                Accuracy = move.accuracy,
+                PP = move.pp,
+                Efeito = efeito?.Effect ?? "",
+                EfeitoCurto = efeito?.ShortEffect ?? "",
+                ChanceEfeito = move.EffectChance
+            };
         }
 
     }

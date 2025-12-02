@@ -69,6 +69,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "PokeNet.Controllers.v2.PokemonController",
+    "Method": "BuscarMovimentos",
+    "RelativePath": "api/v2/Pokemon/{nomeOuNumero}/movimentos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nomeOuNumero",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "PokeNet.Controllers.v2.UsuarioController",
     "Method": "GetAll",
     "RelativePath": "api/v2/Usuario",
