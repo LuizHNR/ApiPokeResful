@@ -15,6 +15,7 @@ using PokeNet.Application.Services;
 using PokeNet.Application.Settings;
 using PokeNet.Application.Swagger;
 using PokeNet.Application.UseCase;
+using PokeNet.Application.UseCases;
 using PokeNet.Application.Validators;
 using PokeNet.Infrastructure.Context;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -105,10 +106,22 @@ builder.Services.AddAuthorization();
 // ApiPokemon
 // ────────────────────────────────────────────
 
+// ApiPokemon
 builder.Services.AddHttpClient<PokemonApiService>(client =>
 {
     client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
 });
+
+builder.Services.AddHttpClient<ItemUseCase>(client =>
+{
+    client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
+});
+
+builder.Services.AddHttpClient<NatureUseCase>(client =>
+{
+    client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
+});
+
 
 
 // ────────────────────────────────────────────
@@ -138,6 +151,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<AuthUseCase>();
 builder.Services.AddScoped<PokemonUseCase>();
 builder.Services.AddScoped<UsuarioUseCase>();
+
 
 // ────────────────────────────────────────────
 // MONGO SETTINGS & CONTEXT

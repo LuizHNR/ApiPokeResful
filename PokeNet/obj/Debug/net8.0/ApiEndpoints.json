@@ -32,6 +32,58 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "PokeNet.API.Controllers.ItemController",
+    "Method": "BuscarTodos",
+    "RelativePath": "api/v2/Item",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PokeNet.API.Controllers.ItemController",
+    "Method": "BuscarItem",
+    "RelativePath": "api/v2/Item/{nomeOuId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nomeOuId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PokeNet.API.Controllers.NatureController",
+    "Method": "BuscarTodas",
+    "RelativePath": "api/v2/Nature",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PokeNet.API.Controllers.NatureController",
+    "Method": "BuscarNature",
+    "RelativePath": "api/v2/Nature/{nomeOuId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nomeOuId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "PokeNet.Controllers.v2.PokemonController",
     "Method": "BuscarTodos",
     "RelativePath": "api/v2/Pokemon",
