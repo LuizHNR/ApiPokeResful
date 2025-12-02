@@ -137,6 +137,32 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "PokeNet.Api.Controllers.RegionController",
+    "Method": "GetAll",
+    "RelativePath": "api/v2/Region",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PokeNet.Api.Controllers.RegionController",
+    "Method": "GetByIdOrName",
+    "RelativePath": "api/v2/Region/{idOrName}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idOrName",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "PokeNet.Controllers.v2.UsuarioController",
     "Method": "GetAll",
     "RelativePath": "api/v2/Usuario",

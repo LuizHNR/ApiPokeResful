@@ -122,7 +122,10 @@ builder.Services.AddHttpClient<NatureUseCase>(client =>
     client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
 });
 
-
+builder.Services.AddHttpClient<RegionUseCase>(client =>
+{
+    client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
+});
 
 // ────────────────────────────────────────────
 // CONTROLLERS

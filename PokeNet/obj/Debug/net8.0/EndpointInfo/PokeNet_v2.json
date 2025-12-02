@@ -455,6 +455,40 @@
           }
         }
       }
+    },
+    "/api/v2/Region": {
+      "get": {
+        "tags": [
+          "Region"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/v2/Region/{idOrName}": {
+      "get": {
+        "tags": [
+          "Region"
+        ],
+        "parameters": [
+          {
+            "name": "idOrName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
     }
   },
   "components": {
