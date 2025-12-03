@@ -54,7 +54,8 @@ namespace PokeNet.Application.Services
                     Nome = finalName,
                     Tipos = detalhe.Types
                         .Select(t => t.Type.Name)
-                        .ToList()
+                        .ToList(),
+                    Sprite = detalhe.Sprites
                 });
             }
 

@@ -4875,11 +4875,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Passos Magicos\\Documents\\Luiz\\PokeNet\\PokeNet\\PokeNet.csproj",
+      "projectUniqueName": "C:\\Users\\Passos Magicos\\Documents\\Luiz\\ApiPokeResful\\PokeNet\\PokeNet.csproj",
       "projectName": "PokeNet",
-      "projectPath": "C:\\Users\\Passos Magicos\\Documents\\Luiz\\PokeNet\\PokeNet\\PokeNet.csproj",
+      "projectPath": "C:\\Users\\Passos Magicos\\Documents\\Luiz\\ApiPokeResful\\PokeNet\\PokeNet.csproj",
       "packagesPath": "C:\\Users\\Passos Magicos\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Passos Magicos\\Documents\\Luiz\\PokeNet\\PokeNet\\obj\\",
+      "outputPath": "C:\\Users\\Passos Magicos\\Documents\\Luiz\\ApiPokeResful\\PokeNet\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

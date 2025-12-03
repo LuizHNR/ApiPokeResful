@@ -188,10 +188,33 @@ builder.Services.AddHealthChecksUI(opt =>
 })
 .AddInMemoryStorage();
 
+
+// ────────────────────────────────────────────
+// CORS
+// ────────────────────────────────────────────
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+            policy
+                .AllowAnyOrigin()   // ou .WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+    );
+});
+
+
+
+
+
 // ────────────────────────────────────────────
 // BUILD
 // ────────────────────────────────────────────
 var app = builder.Build();
+
+
+app.UseCors("AllowFrontend");
+
 
 // ────────────────────────────────────────────
 // SWAGGER UI
