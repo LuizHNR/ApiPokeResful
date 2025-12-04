@@ -21,12 +21,10 @@ namespace PokeNet.Controllers.v2
         /// <summary>
         /// Busca todos os Pokemons.
         /// </summary>
-        /// <param name="page">Número da página (default = 1)</param>
-        /// <param name="pageSize">Quantidade de itens por página (default = 50)</param>
         [HttpGet]
-        public async Task<IActionResult> BuscarTodos([FromQuery] int page = 1,[FromQuery] int pageSize = 151)
+        public async Task<IActionResult> BuscarTodos()
         {
-            var lista = await _useCase.BuscarTodos(page, pageSize);
+            var lista = await _useCase.BuscarTodos();
 
             var result = lista.Select(p => new
             {
@@ -42,8 +40,6 @@ namespace PokeNet.Controllers.v2
 
             return Ok(new
             {
-                page,
-                pageSize,
                 totalItems = lista.Count(),
                 items = result
             });

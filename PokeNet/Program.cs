@@ -106,11 +106,15 @@ builder.Services.AddAuthorization();
 // ApiPokemon
 // ────────────────────────────────────────────
 
+// Add MemoryCache
+builder.Services.AddMemoryCache();
+
 // ApiPokemon
 builder.Services.AddHttpClient<PokemonApiService>(client =>
 {
     client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
 });
+
 
 builder.Services.AddHttpClient<ItemUseCase>(client =>
 {
