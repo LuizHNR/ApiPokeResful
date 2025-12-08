@@ -167,17 +167,20 @@ namespace PokeNet.Application.Services
             );
         }
 
-        private void ExtrairEvolucoes(ChainLink link, List<PokemonEvolucaoDTO> lista)
+        private async Task ExtrairEvolucoes(ChainLink link, List<PokemonEvolucaoDTO> lista)
         {
             string speciesUrl = link.Species.Url;
             int numero = int.Parse(speciesUrl.TrimEnd('/').Split('/').Last());
             int? minLevel = link.Evolution_Details.FirstOrDefault()?.Min_Level;
+
+            var detalhe = await BuscarPokemonDetalhe(numero);
 
             lista.Add(new PokemonEvolucaoDTO
             {
                 Numero = numero,
                 Nome = Capitalizar(link.Species.Name),
                 NivelParaEvoluir = minLevel,
+                Sprite = detalhe?.Sprites ?? new PokemonSprite(),
                 Links = new { self = $"/api/v2/pokemon/{numero}" }
             });
 

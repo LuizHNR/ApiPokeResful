@@ -5,7 +5,7 @@
         public int Numero { get; set; }
         public string Nome { get; set; } = "";
         public int? NivelParaEvoluir { get; set; }
-
+        public PokemonSprite Sprite { get; set; } = new();
         public object Links { get; set; } = default!;
     }
 
