@@ -36,7 +36,7 @@ namespace PokeNet.Application.Services
         {
             return await GetOrCreateAsync(
                 "todos_pokemons_cache",
-                TimeSpan.FromHours(12),
+                TimeSpan.FromHours(24),
                 async () =>
                 {
                     var document = await _http.GetFromJsonAsync<JsonDocument>("pokemon?limit=3000");
@@ -74,7 +74,7 @@ namespace PokeNet.Application.Services
         {
             return await GetOrCreateAsync(
                 $"pokemon_detail_{id}",
-                TimeSpan.FromHours(6),
+                TimeSpan.FromHours(24),
                 async () =>
                     await _http.GetFromJsonAsync<PokemonApiDetail>($"pokemon/{id}")
             );
@@ -87,7 +87,7 @@ namespace PokeNet.Application.Services
         {
             return await GetOrCreateAsync(
                 $"pokemon_completo_{nomeOuNumero}",
-                TimeSpan.FromHours(6),
+                TimeSpan.FromHours(24),
                 async () =>
                 {
                     try

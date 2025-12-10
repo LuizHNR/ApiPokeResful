@@ -1,4 +1,5 @@
-﻿using PokeNet.Application.DTO.Response;
+﻿using Microsoft.Extensions.Caching.Memory;
+using PokeNet.Application.DTO.Response;
 using PokeNet.Application.DTO.External;
 using System.Net.Http.Json;
 
@@ -7,63 +8,83 @@ namespace PokeNet.Application.UseCases
     public class ItemUseCase
     {
         private readonly HttpClient _http;
+        private readonly IMemoryCache _cache;
 
-        public ItemUseCase(HttpClient http)
+        public ItemUseCase(HttpClient http, IMemoryCache cache)
         {
             _http = http;
+            _cache = cache;
         }
 
+        // Função genérica de cache
+        private async Task<T> GetOrCreateAsync<T>(string key, TimeSpan ttl, Func<Task<T>> factory)
+        {
+            if (_cache.TryGetValue(key, out T value))
+                return value;
+
+            value = await factory();
+            _cache.Set(key, value, ttl);
+            return value;
+        }
+
+        // ────────────────────────────────────────────
+        // BUSCAR TODOS (AGORA COM CACHE)
+        // ────────────────────────────────────────────
+        private string ExtractIdFromUrl(string url)
+        {
+            return url.TrimEnd('/').Split('/').Last();
+        }
 
         public async Task<List<ItemResponse>> BuscarTodos()
         {
-            var list = await _http.GetFromJsonAsync<ItemListResponse>("item?limit=100000&offset=0");
-
-            if (list == null || list.Results == null)
-                return new List<ItemResponse>();
-
-            // Baixa tudo paralelo
-            var tasks = list.Results.Select(async item =>
-            {
-                var detail = await _http.GetFromJsonAsync<ItemDetailResponse>(item.Url);
-                if (detail == null) return null;
-
-                var efeito = detail.EffectEntries
-                    .FirstOrDefault(e => e.Language.Name == "en")
-                    ?.ShortEffect ?? "";
-
-                return new ItemResponse
+            return await GetOrCreateAsync(
+                "itens_todos_cache",
+                TimeSpan.FromHours(24),
+                async () =>
                 {
-                    Nome = detail.Name,
-                    Sprite = detail.Sprites.Default,
-                    Efeito = efeito
-                };
-            });
+                    var list = await _http.GetFromJsonAsync<ItemListResponse>("item?limit=100000&offset=0");
 
-            return (await Task.WhenAll(tasks))
-                .Where(x => x != null)
-                .ToList()!;
+                    if (list == null || list.Results == null)
+                        return new List<ItemResponse>();
+
+                    var tasks = list.Results.Select(async item =>
+                    {
+                        var id = ExtractIdFromUrl(item.Url);
+                        return await BuscarItem(id); // agora SEM ERRO
+                    });
+
+                    return (await Task.WhenAll(tasks))
+                        .Where(x => x != null)
+                        .ToList()!;
+                }
+            );
         }
 
-
-
-
+        // ────────────────────────────────────────────
+        // BUSCAR ITEM INDIVIDUAL (COM CACHE)
+        // ────────────────────────────────────────────
         public async Task<ItemResponse?> BuscarItem(string nomeOuId)
         {
-            var item = await _http.GetFromJsonAsync<ItemDetailResponse>($"https://pokeapi.co/api/v2/item/{nomeOuId.ToLower()}");
+            return await GetOrCreateAsync(
+                $"item_detail_{nomeOuId}",
+                TimeSpan.FromHours(24),
+                async () =>
+                {
+                    var item = await _http.GetFromJsonAsync<ItemDetailResponse>($"item/{nomeOuId}");
+                    if (item == null) return null;
 
-            if (item == null)
-                return null;
+                    var efeito = item.EffectEntries
+                        .FirstOrDefault(e => e.Language.Name == "en")
+                        ?.ShortEffect ?? "";
 
-            var efeito = item.EffectEntries
-                .FirstOrDefault(e => e.Language.Name == "en")
-                ?.ShortEffect ?? "";
-
-            return new ItemResponse
-            {
-                Nome = item.Name,
-                Sprite = item.Sprites.Default,
-                Efeito = efeito
-            };
+                    return new ItemResponse
+                    {
+                        Nome = item.Name,
+                        Sprite = item.Sprites.Default,
+                        Efeito = efeito
+                    };
+                }
+            );
         }
     }
 }
