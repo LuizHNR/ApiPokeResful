@@ -33,7 +33,7 @@
   },
   {
     "ContainingType": "PokeNet.API.Controllers.ItemController",
-    "Method": "BuscarTodos",
+    "Method": "GetAll",
     "RelativePath": "api/v2/Item",
     "HttpMethod": "GET",
     "IsController": true,
@@ -43,7 +43,7 @@
   },
   {
     "ContainingType": "PokeNet.API.Controllers.ItemController",
-    "Method": "BuscarItem",
+    "Method": "GetItem",
     "RelativePath": "api/v2/Item/{nomeOuId}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -59,7 +59,7 @@
   },
   {
     "ContainingType": "PokeNet.API.Controllers.NatureController",
-    "Method": "BuscarTodas",
+    "Method": "GetAll",
     "RelativePath": "api/v2/Nature",
     "HttpMethod": "GET",
     "IsController": true,
@@ -69,7 +69,7 @@
   },
   {
     "ContainingType": "PokeNet.API.Controllers.NatureController",
-    "Method": "BuscarNature",
+    "Method": "GetNature",
     "RelativePath": "api/v2/Nature/{nomeOuId}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -84,8 +84,24 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "PokeNet.Api.Controllers.PokedexController",
+    "Method": "Get",
+    "RelativePath": "api/v2/Pokedex/{idOuNome}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idOuNome",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "PokeNet.Controllers.v2.PokemonController",
-    "Method": "BuscarTodos",
+    "Method": "GetAll",
     "RelativePath": "api/v2/Pokemon",
     "HttpMethod": "GET",
     "IsController": true,
@@ -95,7 +111,7 @@
   },
   {
     "ContainingType": "PokeNet.Controllers.v2.PokemonController",
-    "Method": "BuscarPokemon",
+    "Method": "GetPokemon",
     "RelativePath": "api/v2/Pokemon/{nomeOuNumero}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -111,7 +127,7 @@
   },
   {
     "ContainingType": "PokeNet.Controllers.v2.PokemonController",
-    "Method": "BuscarMovimentos",
+    "Method": "GetMovimentos",
     "RelativePath": "api/v2/Pokemon/{nomeOuNumero}/movimentos",
     "HttpMethod": "GET",
     "IsController": true,
@@ -126,25 +142,15 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "PokeNet.Api.Controllers.RegionController",
-    "Method": "GetAll",
-    "RelativePath": "api/v2/Region",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "PokeNet.Api.Controllers.RegionController",
-    "Method": "GetByIdOrName",
-    "RelativePath": "api/v2/Region/{idOrName}",
+    "ContainingType": "PokeNet.API.Controllers.v2.RegionController",
+    "Method": "Get",
+    "RelativePath": "api/v2/Region/{idOuNome}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "idOrName",
+        "Name": "idOuNome",
         "Type": "System.String",
         "IsRequired": true
       }
@@ -332,5 +338,31 @@
     "Tags": [
       "CRUD Usuario"
     ]
+  },
+  {
+    "ContainingType": "PokeNet.API.Controllers.v2.VersionGroupController",
+    "Method": "GetAll",
+    "RelativePath": "api/v2/VersionGroup",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PokeNet.API.Controllers.v2.VersionGroupController",
+    "Method": "GetId",
+    "RelativePath": "api/v2/VersionGroup/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   }
 ]

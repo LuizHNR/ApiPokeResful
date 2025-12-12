@@ -22,7 +22,7 @@ namespace PokeNet.Controllers.v2
         /// Busca todos os Pokemons.
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> BuscarTodos()
+        public async Task<IActionResult> GetAll()
         {
             var lista = await _useCase.BuscarTodos();
 
@@ -34,7 +34,7 @@ namespace PokeNet.Controllers.v2
                 p.Sprite,
                 links = new
                 {
-                    self = Url.Action(nameof(BuscarPokemon), new { nomeOuNumero = p.Numero })
+                    self = Url.Action(nameof(GetPokemon), new { nomeOuNumero = p.Numero })
                 }
             });
 
@@ -52,7 +52,7 @@ namespace PokeNet.Controllers.v2
         /// </summary>
         /// <param name="id">id do registro</param>
         [HttpGet("{nomeOuNumero}")]
-        public async Task<IActionResult> BuscarPokemon(string nomeOuNumero)
+        public async Task<IActionResult> GetPokemon(string nomeOuNumero)
         {
             var pokemon = await _useCase.BuscarPokemon(nomeOuNumero);
 
@@ -68,7 +68,7 @@ namespace PokeNet.Controllers.v2
         /// Busca movimentos do pokemon.
         /// </summary>
         [HttpGet("{nomeOuNumero}/movimentos")]
-        public async Task<IActionResult> BuscarMovimentos(string nomeOuNumero)
+        public async Task<IActionResult> GetMovimentos(string nomeOuNumero)
         {
             var result = await _useCase.BuscarMovimentos(nomeOuNumero);
 

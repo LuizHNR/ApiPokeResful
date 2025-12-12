@@ -109,28 +109,11 @@ builder.Services.AddAuthorization();
 // Add MemoryCache
 builder.Services.AddMemoryCache();
 
-// ApiPokemon
-builder.Services.AddHttpClient<PokemonApiService>(client =>
+builder.Services.AddHttpClient("PokeApi", client =>
 {
     client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
 });
 
-
-builder.Services.AddHttpClient<ItemUseCase>(client =>
-{
-    client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
-});
-
-
-builder.Services.AddHttpClient<NatureUseCase>(client =>
-{
-    client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
-});
-
-builder.Services.AddHttpClient<RegionUseCase>(client =>
-{
-    client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
-});
 
 // ────────────────────────────────────────────
 // CONTROLLERS
@@ -154,12 +137,21 @@ builder.Services.AddValidatorsFromAssemblyContaining<RequestUsuarioValidator>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // ────────────────────────────────────────────
+// Service
+// ────────────────────────────────────────────
+builder.Services.AddScoped<PokemonApiService>();
+
+// ────────────────────────────────────────────
 // USE CASES
 // ────────────────────────────────────────────
 builder.Services.AddScoped<AuthUseCase>();
 builder.Services.AddScoped<PokemonUseCase>();
 builder.Services.AddScoped<UsuarioUseCase>();
-
+builder.Services.AddScoped<ItemUseCase>();
+builder.Services.AddScoped<NatureUseCase>();
+builder.Services.AddScoped<VersionGroupUseCase>();
+builder.Services.AddScoped<RegionUseCase>();
+builder.Services.AddScoped<PokedexUseCase>();
 
 // ────────────────────────────────────────────
 // MONGO SETTINGS & CONTEXT

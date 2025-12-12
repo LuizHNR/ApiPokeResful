@@ -18,7 +18,7 @@ namespace PokeNet.API.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> BuscarTodas()
+        public async Task<IActionResult> GetAll()
         {
             var natures = await _useCase.BuscarTodas();
             return Ok(natures);
@@ -31,7 +31,7 @@ namespace PokeNet.API.Controllers
         /// Busca uma nature pelo nome ou ID.
         /// </summary>
         [HttpGet("{nomeOuId}")]
-        public async Task<IActionResult> BuscarNature(string nomeOuId)
+        public async Task<IActionResult> GetNature(string nomeOuId)
         {
             var natureza = await _useCase.BuscarNature(nomeOuId);
 

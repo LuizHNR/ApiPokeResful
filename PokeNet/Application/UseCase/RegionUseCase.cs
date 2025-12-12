@@ -1,109 +1,100 @@
-﻿using PokeNet.Application.DTO.External;
+﻿using Microsoft.Extensions.Caching.Memory;
+using PokeNet.Application.DTO.Response;
+using System.Net.Http.Json;
 
-public class RegionUseCase
+namespace PokeNet.Application.UseCases
 {
-    private readonly HttpClient _http;
-
-    public RegionUseCase(HttpClient http)
+    public class RegionUseCase
     {
-        _http = http;
-    }
+        private readonly HttpClient _http;
+        private readonly IMemoryCache _cache;
 
-    // ======================
-    // GET ALL
-    // ======================
-    public async Task<List<RegionDetailResponse>> GetAllAsync()
-    {
-        var list = await _http.GetFromJsonAsync<RegionListResponse>(
-            "region?limit=1000&offset=0"
-        );
-
-        var simpleList = new List<RegionDetailResponse>();
-
-        foreach (var item in list.Results)
+        public RegionUseCase(IHttpClientFactory factory, IMemoryCache cache)
         {
-            simpleList.Add(new RegionDetailResponse
-            {
-                Name = item.Name,
-                LocationsComplete = new() // vazio no GET ALL
-            });
+            _http = factory.CreateClient("PokeApi");
+            _cache = cache;
         }
 
-        return simpleList;
-    }
-
-
-    // ======================
-    // GET BY ID OR NAME
-    // ======================
-    public async Task<RegionDetailResponse?> GetByIdOrNameAsync(string idOrName)
-    {
-        var region = await _http.GetFromJsonAsync<RegionDetailResponse>(
-            $"region/{idOrName}"
-        );
-
-        var enrichedLocations = new List<RegionLocationCompleteDTO>();
-
-        foreach (var loc in region.Locations)
+        private async Task<T> GetOrCreateAsync<T>(string key, TimeSpan ttl, Func<Task<T>> factory)
         {
-            var id = loc.Url.TrimEnd('/').Split('/').Last();
+            if (_cache.TryGetValue(key, out T value))
+                return value;
 
-            var locDetails = await _http.GetFromJsonAsync<LocationDetailResponse>(
-                $"location/{id}"
-            );
-
-            // Nome localizado (fallback inglês)
-            string name =
-                locDetails.Names.FirstOrDefault(x => x.Language.Name == "en")?.Name
-                ?? loc.Name;
-
-            // ======================
-            // DESCRIÇÃO COM FALLBACK INTELIGENTE
-            // ======================
-            string description = GetFallbackDescription(locDetails);
-
-            if (locDetails.Areas?.Any() == true)
-            {
-                var areaId = locDetails.Areas.First().Url.TrimEnd('/').Split('/').Last();
-
-                var locArea = await _http.GetFromJsonAsync<LocationAreaDetailResponse>(
-                    $"location-area/{areaId}"
-                );
-
-                var flavor =
-                    locArea.Flavor_Text_Entries
-                        .FirstOrDefault(f => f.Language.Name == "pt")?.Flavor_Text ??
-                    locArea.Flavor_Text_Entries
-                        .FirstOrDefault(f => f.Language.Name == "en")?.Flavor_Text;
-
-                // Se realmente existir flavor text, substitui o fallback
-                if (!string.IsNullOrWhiteSpace(flavor))
-                    description = flavor;
-            }
-
-            enrichedLocations.Add(new RegionLocationCompleteDTO
-            {
-                Name = name,
-                Description = description
-            });
+            value = await factory();
+            _cache.Set(key, value, ttl);
+            return value;
         }
 
-        region.Locations = null!;
-        region.LocationsComplete = enrichedLocations;
+        private string ExtractIdFromUrl(string url) =>
+            url.TrimEnd('/').Split('/').Last();
 
-        return region;
-    }
+        public async Task<RegionResponse?> Buscar(string idOuNome)
+        {
+            return await GetOrCreateAsync(
+                $"region_{idOuNome}",
+                TimeSpan.FromHours(24),
+                async () =>
+                {
+                    // --- 1) REGIÃO ---
+                    var regionUrl = $"region/{idOuNome}";
+                    var region = await _http.GetFromJsonAsync<RegionDetailDto>(regionUrl);
 
+                    if (region == null) return null;
 
+                    var response = new RegionResponse
+                    {
+                        Nome = region.Name
+                    };
 
-    // ======================
-    // MÉTODO PRIVADO – FALLBACK DE DESCRIÇÃO MAIS BONITO
-    // ======================
-    private string GetFallbackDescription(LocationDetailResponse loc)
-    {
-        var enName = loc.Names
-            .FirstOrDefault(n => n.Language.Name == "en")?.Name ?? loc.Id.ToString();
+                    // --- 2) CADA LOCATION DA REGIÃO ---
+                    var rotaTasks = region.Locations.Select(async loc =>
+                    {
+                        var locId = ExtractIdFromUrl(loc.Url);
+                        var locationDetail = await _http.GetFromJsonAsync<LocationDetailDto>($"location/{locId}");
 
-        return $"Local conhecido como '{enName}'. Nenhuma descrição oficial disponível.";
+                        if (locationDetail == null)
+                            return null;
+
+                        var rota = new RegionLocationResponse
+                        {
+                            Nome = locationDetail.Name
+                        };
+
+                        // --- 3) PEGAR LOCATION AREAS ---
+                        foreach (var area in locationDetail.Areas)
+                        {
+                            var areaId = ExtractIdFromUrl(area.Url);
+
+                            var areaDetail = await _http.GetFromJsonAsync<LocationAreaDetailDto>($"location-area/{areaId}");
+
+                            if (areaDetail?.PokemonEncounters != null)
+                            {
+                                foreach (var enc in areaDetail.PokemonEncounters)
+                                {
+                                    var version = enc.VersionDetails.FirstOrDefault();
+                                    var encounterDetail = version?.EncounterDetails.FirstOrDefault();
+
+                                    rota.Encounters.Add(new RegionPokemonEncounterResponse
+                                    {
+                                        Pokemon = enc.Pokemon.Name,
+                                        Rate = encounterDetail?.Chance ?? 0,     // chance real da PokeAPI
+                                        BaseScore = version?.MaxChance ?? 0      // max_chance real
+                                    });
+                                }
+                            }
+                        }
+
+                        return rota;
+                    });
+
+                    var rotas = (await Task.WhenAll(rotaTasks))
+                        .Where(r => r != null)
+                        .ToList()!;
+
+                    response.Rotas = rotas;
+
+                    return response;
+                });
+        }
     }
 }

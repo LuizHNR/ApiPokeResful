@@ -12,9 +12,10 @@ namespace PokeNet.Application.Services
         private readonly HttpClient _http;
         private readonly IMemoryCache _cache;
 
-        public PokemonApiService(HttpClient http, IMemoryCache cache)
+        // AGORA CORRETO: IHttpClientFactory → client nomeado "PokeApi"
+        public PokemonApiService(IHttpClientFactory factory, IMemoryCache cache)
         {
-            _http = http;
+            _http = factory.CreateClient("PokeApi");
             _cache = cache;
         }
 
@@ -160,7 +161,7 @@ namespace PokeNet.Application.Services
                     if (chain == null) return new List<PokemonEvolucaoDTO>();
 
                     var lista = new List<PokemonEvolucaoDTO>();
-                    ExtrairEvolucoes(chain.Chain, lista);
+                    await ExtrairEvolucoes(chain.Chain, lista);
 
                     return lista;
                 }
@@ -185,7 +186,7 @@ namespace PokeNet.Application.Services
             });
 
             foreach (var e in link.Evolves_To)
-                ExtrairEvolucoes(e, lista);
+                await ExtrairEvolucoes(e, lista);
         }
 
         private string Capitalizar(string nome)

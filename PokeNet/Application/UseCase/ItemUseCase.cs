@@ -10,13 +10,12 @@ namespace PokeNet.Application.UseCases
         private readonly HttpClient _http;
         private readonly IMemoryCache _cache;
 
-        public ItemUseCase(HttpClient http, IMemoryCache cache)
+        public ItemUseCase(IHttpClientFactory factory, IMemoryCache cache)
         {
-            _http = http;
+            _http = factory.CreateClient("PokeApi");
             _cache = cache;
         }
 
-        // Função genérica de cache
         private async Task<T> GetOrCreateAsync<T>(string key, TimeSpan ttl, Func<Task<T>> factory)
         {
             if (_cache.TryGetValue(key, out T value))
@@ -27,9 +26,6 @@ namespace PokeNet.Application.UseCases
             return value;
         }
 
-        // ────────────────────────────────────────────
-        // BUSCAR TODOS (AGORA COM CACHE)
-        // ────────────────────────────────────────────
         private string ExtractIdFromUrl(string url)
         {
             return url.TrimEnd('/').Split('/').Last();
@@ -50,7 +46,7 @@ namespace PokeNet.Application.UseCases
                     var tasks = list.Results.Select(async item =>
                     {
                         var id = ExtractIdFromUrl(item.Url);
-                        return await BuscarItem(id); // agora SEM ERRO
+                        return await BuscarItem(id);
                     });
 
                     return (await Task.WhenAll(tasks))
@@ -60,9 +56,6 @@ namespace PokeNet.Application.UseCases
             );
         }
 
-        // ────────────────────────────────────────────
-        // BUSCAR ITEM INDIVIDUAL (COM CACHE)
-        // ────────────────────────────────────────────
         public async Task<ItemResponse?> BuscarItem(string nomeOuId)
         {
             return await GetOrCreateAsync(

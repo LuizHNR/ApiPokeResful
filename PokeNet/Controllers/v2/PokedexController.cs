@@ -2,16 +2,16 @@
 using Microsoft.AspNetCore.Mvc;
 using PokeNet.Application.UseCases;
 
-namespace PokeNet.API.Controllers.v2
+namespace PokeNet.Api.Controllers
 {
-    [ApiController]
-    [ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class RegionController : ControllerBase
+    [ApiVersion("2.0")]
+    [ApiController]
+    public class PokedexController : ControllerBase
     {
-        private readonly RegionUseCase _useCase;
+        private readonly PokedexUseCase _useCase;
 
-        public RegionController(RegionUseCase useCase)
+        public PokedexController(PokedexUseCase useCase)
         {
             _useCase = useCase;
         }
@@ -22,7 +22,7 @@ namespace PokeNet.API.Controllers.v2
             var result = await _useCase.Buscar(idOuNome);
 
             if (result == null)
-                return NotFound("Região não encontrada.");
+                return NotFound();
 
             return Ok(result);
         }

@@ -8,11 +8,10 @@ namespace PokeNet.Application.UseCases
     {
         private readonly HttpClient _http;
 
-        public NatureUseCase(HttpClient http)
+        public NatureUseCase(IHttpClientFactory factory)
         {
-            _http = http;
+            _http = factory.CreateClient("PokeApi");
         }
-
 
         public async Task<List<NatureResponse>> BuscarTodas()
         {
@@ -39,21 +38,18 @@ namespace PokeNet.Application.UseCases
                 .ToList()!;
         }
 
-
-
         public async Task<NatureResponse?> BuscarNature(string nomeOuId)
         {
-            var nature = await _http.GetFromJsonAsync<NatureDetailResponse>($"https://pokeapi.co/api/v2/nature/{nomeOuId.ToLower()}");
+            var detail = await _http.GetFromJsonAsync<NatureDetailResponse>($"nature/{nomeOuId.ToLower()}");
 
-
-            if (nature == null)
+            if (detail == null)
                 return null;
 
             return new NatureResponse
             {
-                Nome = nature.Name,
-                Aumenta = nature.Increased?.Name ?? "none",
-                Diminui = nature.Decreased?.Name ?? "none"
+                Nome = detail.Name,
+                Aumenta = detail.Increased?.Name ?? "none",
+                Diminui = detail.Decreased?.Name ?? "none"
             };
         }
     }

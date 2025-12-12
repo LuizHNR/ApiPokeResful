@@ -380,6 +380,28 @@
         }
       }
     },
+    "/api/v2/Pokedex/{idOuNome}": {
+      "get": {
+        "tags": [
+          "Pokedex"
+        ],
+        "parameters": [
+          {
+            "name": "idOuNome",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/v2/Pokemon": {
       "get": {
         "tags": [
@@ -436,10 +458,20 @@
         }
       }
     },
-    "/api/v2/Region": {
+    "/api/v2/Region/{idOuNome}": {
       "get": {
         "tags": [
           "Region"
+        ],
+        "parameters": [
+          {
+            "name": "idOuNome",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -448,14 +480,26 @@
         }
       }
     },
-    "/api/v2/Region/{idOrName}": {
+    "/api/v2/VersionGroup": {
       "get": {
         "tags": [
-          "Region"
+          "VersionGroup"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/v2/VersionGroup/{id}": {
+      "get": {
+        "tags": [
+          "VersionGroup"
         ],
         "parameters": [
           {
-            "name": "idOrName",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
