@@ -14,12 +14,10 @@ namespace PokeNet.Application.UseCase
             _api = api;
         }
 
-        public async Task<PagedResponse<PokemonListaResponse>> BuscarTodos(int page,int pageSize)
+        public async Task<PagedResponse<PokemonListaResponse>> BuscarTodos(int page,int pageSize,string? search)
         {
-            return await _api.BuscarTodos(page, pageSize);
+            return await _api.BuscarTodos(page, pageSize, search);
         }
-
-
 
 
 

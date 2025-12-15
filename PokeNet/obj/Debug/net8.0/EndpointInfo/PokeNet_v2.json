@@ -425,6 +425,13 @@
               "format": "int32",
               "default": 50
             }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {

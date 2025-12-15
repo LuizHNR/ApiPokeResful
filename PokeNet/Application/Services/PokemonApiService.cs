@@ -31,38 +31,58 @@ namespace PokeNet.Application.Services
         }
 
         // ────────────────────────────────────────────
-        // Buscar TODOS os pokemons (3000+) COM CACHE
+        // Buscar TODOS os pokemons COM CACHE
         // ────────────────────────────────────────────
-        public async Task<PagedResponse<PokemonListaResponse>> BuscarTodos(int page = 1,int pageSize = 50)
+        public async Task<PagedResponse<PokemonListaResponse>> BuscarTodos(int page = 1,int pageSize = 50,string? search = null)
         {
             if (page < 1) page = 1;
-            if (pageSize < 1) pageSize = 20;
+            if (pageSize < 1) pageSize = 50;
             if (pageSize > 100) pageSize = 100;
 
-            var offset = (page - 1) * pageSize;
-
+            // BUSCA O ÍNDICE COMPLETO (cacheado)
             var list = await GetOrCreateAsync(
-                $"pokemon_page_{page}_{pageSize}",
-                TimeSpan.FromMinutes(30),
+                "pokemon_list_all",
+                TimeSpan.FromHours(6),
                 async () =>
                     await _http.GetFromJsonAsync<PokeApiListResponse>(
-                        $"pokemon?offset={offset}&limit={pageSize}"
+                        "pokemon?offset=0&limit=5000"
                     )
             );
 
+            // FILTRO POR NOME OU NÚMERO
+            var filtrados = list.Results
+                .Select(item => new
+                {
+                    Item = item,
+                    Id = int.Parse(item.Url.TrimEnd('/').Split('/').Last())
+                })
+                .Where(x =>
+                    string.IsNullOrWhiteSpace(search)
+                    || x.Item.Name.Contains(search.Trim().ToLower())
+                    || x.Id.ToString().Contains(search.Trim())
+                )
+                .ToList();
+
+            var totalFiltrado = filtrados.Count;
+
+            // PAGINAÇÃO APLICADA DEPOIS DO FILTRO
+            var paged = filtrados
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
             var items = new List<PokemonListaResponse>();
 
-            foreach (var item in list.Results)
+            // BUSCA DETALHES APENAS DOS POKÉMONS DA PÁGINA
+            foreach (var p in paged)
             {
-                int id = int.Parse(item.Url.TrimEnd('/').Split('/').Last());
-
-                var detalhe = await BuscarPokemonDetalhe(id);
+                var detalhe = await BuscarPokemonDetalhe(p.Id);
                 if (detalhe == null) continue;
 
                 items.Add(new PokemonListaResponse
                 {
-                    Numero = id,
-                    Nome = Capitalizar(item.Name),
+                    Numero = p.Id,
+                    Nome = Capitalizar(p.Item.Name),
                     Tipos = detalhe.Types.Select(t => t.Type.Name).ToList(),
                     Sprite = detalhe.Sprites
                 });
@@ -72,11 +92,14 @@ namespace PokeNet.Application.Services
             {
                 Page = page,
                 PageSize = pageSize,
-                TotalItems = list.Count,
-                TotalPages = (int)Math.Ceiling(list.Count / (double)pageSize),
+                TotalItems = totalFiltrado,
+                TotalPages = (int)Math.Ceiling(totalFiltrado / (double)pageSize),
                 Items = items
             };
         }
+
+
+
 
 
         // Cache do detalhe do Pokémon
