@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using PokeNet.Application.DTO.External;
 using PokeNet.Application.DTO.Response;
+using PokeNet.Application.Services;
 using System.Net.Http.Json;
 
 namespace PokeNet.Application.UseCases
@@ -9,11 +10,16 @@ namespace PokeNet.Application.UseCases
     {
         private readonly HttpClient _http;
         private readonly IMemoryCache _cache;
+        private readonly PokemonApiService _pokemonApi;
 
-        public PokedexUseCase(IHttpClientFactory factory, IMemoryCache cache)
+
+        public PokedexUseCase(IHttpClientFactory factory, IMemoryCache cache, PokemonApiService pokemonApi
+)
         {
             _http = factory.CreateClient("PokeApi");
             _cache = cache;
+            _pokemonApi = pokemonApi;
+
         }
 
         private async Task<T> GetOrCreateAsync<T>(string key, TimeSpan ttl, Func<Task<T>> factory)
@@ -53,12 +59,23 @@ namespace PokeNet.Application.UseCases
 
                     foreach (var entry in dto.Pokemon_Entries)
                     {
+
+                        var detalhe = await _pokemonApi.BuscarPokemon(entry.Entry_Number.ToString());
+
+                        if (detalhe == null)
+                            continue;
+
                         response.Pokemons.Add(new PokedexPokemonResponse
                         {
                             Numero = entry.Entry_Number,
-                            Nome = entry.Pokemon_Species.Name
+                            Nome = char.ToUpper(entry.Pokemon_Species.Name[0])
+                                   + entry.Pokemon_Species.Name[1..],
+
+                            Tipos = detalhe.Tipos,
+                            Sprite = detalhe.Sprites
                         });
                     }
+
 
                     return response;
                 });
