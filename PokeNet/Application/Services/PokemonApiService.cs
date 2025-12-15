@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using PokeNet.Application.DTO.External;
+using PokeNet.Application.DTO.Request;
 using PokeNet.Application.DTO.Response;
 using PokeNet.Domain.Entities;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace PokeNet.Application.Services
 {
@@ -12,15 +12,27 @@ namespace PokeNet.Application.Services
         private readonly HttpClient _http;
         private readonly IMemoryCache _cache;
 
-        // AGORA CORRETO: IHttpClientFactory → client nomeado "PokeApi"
         public PokemonApiService(IHttpClientFactory factory, IMemoryCache cache)
         {
             _http = factory.CreateClient("PokeApi");
             _cache = cache;
         }
 
-        // Função auxiliar para cache
-        private async Task<T> GetOrCreateAsync<T>(string key, TimeSpan ttl, Func<Task<T>> factory)
+        // DTO INTERNO PARA LISTAGEM
+        private class PokemonListItem
+        {
+            public NamedAPIResource Item { get; set; } = null!;
+            public int Id { get; set; }
+        }
+
+        // ────────────────────────────────────────────
+        // CACHE AUXILIAR
+        // ────────────────────────────────────────────
+        private async Task<T> GetOrCreateAsync<T>(
+            string key,
+            TimeSpan ttl,
+            Func<Task<T>> factory
+        )
         {
             if (_cache.TryGetValue(key, out T value))
                 return value;
@@ -31,15 +43,31 @@ namespace PokeNet.Application.Services
         }
 
         // ────────────────────────────────────────────
-        // Buscar TODOS os pokemons COM CACHE
+        // INTERVALOS DE GERAÇÃO
         // ────────────────────────────────────────────
-        public async Task<PagedResponse<PokemonListaResponse>> BuscarTodos(int page = 1,int pageSize = 50,string? search = null)
+        private static readonly Dictionary<int, (int Min, int Max)> GenRanges = new()
         {
-            if (page < 1) page = 1;
-            if (pageSize < 1) pageSize = 50;
-            if (pageSize > 100) pageSize = 100;
+            {1, (1, 151)},
+            {2, (152, 251)},
+            {3, (252, 386)},
+            {4, (387, 493)},
+            {5, (494, 649)},
+            {6, (650, 721)},
+            {7, (722, 809)},
+            {8, (810, 905)},
+            {9, (906, 1025)}
+        };
 
-            // BUSCA O ÍNDICE COMPLETO (cacheado)
+        // ────────────────────────────────────────────
+        // LISTAGEM COM FILTROS
+        // ────────────────────────────────────────────
+        public async Task<PagedResponse<PokemonListaResponse>> BuscarTodos(
+            PokemonFilterRequest filter
+        )
+        {
+            int page = filter.Page < 1 ? 1 : filter.Page;
+            int pageSize = filter.PageSize is < 1 or > 100 ? 50 : filter.PageSize;
+
             var list = await GetOrCreateAsync(
                 "pokemon_list_all",
                 TimeSpan.FromHours(6),
@@ -49,23 +77,69 @@ namespace PokeNet.Application.Services
                     )
             );
 
-            // FILTRO POR NOME OU NÚMERO
             var filtrados = list.Results
-                .Select(item => new
+                .Select(p => new PokemonListItem
                 {
-                    Item = item,
-                    Id = int.Parse(item.Url.TrimEnd('/').Split('/').Last())
+                    Item = p,
+                    Id = int.Parse(p.Url.TrimEnd('/').Split('/').Last())
                 })
-                .Where(x =>
-                    string.IsNullOrWhiteSpace(search)
-                    || x.Item.Name.Contains(search.Trim().ToLower())
-                    || x.Id.ToString().Contains(search.Trim())
-                )
                 .ToList();
 
-            var totalFiltrado = filtrados.Count;
+            // BUSCA POR NOME OU NÚMERO
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                var s = filter.Search.Trim().ToLower();
+                filtrados = filtrados.Where(x =>
+                    x.Item.Name.Contains(s) ||
+                    x.Id.ToString().Contains(s)
+                ).ToList();
+            }
 
-            // PAGINAÇÃO APLICADA DEPOIS DO FILTRO
+            // FILTRO POR GERAÇÕES
+            if (filter.Generations.Any())
+            {
+                filtrados = filtrados.Where(x =>
+                    filter.Generations.Any(gen =>
+                        GenRanges.ContainsKey(gen) &&
+                        x.Id >= GenRanges[gen].Min &&
+                        x.Id <= GenRanges[gen].Max
+                    )
+                ).ToList();
+            }
+
+            // FILTRO POR TIPOS
+            if (filter.Types.Any())
+            {
+                var temp = new List<PokemonListItem>();
+
+                foreach (var p in filtrados)
+                {
+                    var detalhe = await BuscarPokemonDetalhe(p.Id);
+                    if (detalhe == null) continue;
+
+                    if (detalhe.Types.Any(t =>
+                        filter.Types.Contains(t.Type.Name)
+                    ))
+                    {
+                        temp.Add(p);
+                    }
+                }
+
+                filtrados = temp;
+            }
+
+            // ORDENAÇÃO
+            filtrados = filter.Order switch
+            {
+                "name_asc" => filtrados.OrderBy(x => x.Item.Name).ToList(),
+                "name_desc" => filtrados.OrderByDescending(x => x.Item.Name).ToList(),
+                "id_desc" => filtrados.OrderByDescending(x => x.Id).ToList(),
+                _ => filtrados.OrderBy(x => x.Id).ToList()
+            };
+
+            int totalFiltrado = filtrados.Count;
+
+            // PAGINAÇÃO
             var paged = filtrados
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -73,7 +147,6 @@ namespace PokeNet.Application.Services
 
             var items = new List<PokemonListaResponse>();
 
-            // BUSCA DETALHES APENAS DOS POKÉMONS DA PÁGINA
             foreach (var p in paged)
             {
                 var detalhe = await BuscarPokemonDetalhe(p.Id);
@@ -98,11 +171,9 @@ namespace PokeNet.Application.Services
             };
         }
 
-
-
-
-
-        // Cache do detalhe do Pokémon
+        // ────────────────────────────────────────────
+        // DETALHE (CACHE)
+        // ────────────────────────────────────────────
         private async Task<PokemonApiDetail?> BuscarPokemonDetalhe(int id)
         {
             return await GetOrCreateAsync(

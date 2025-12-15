@@ -1,4 +1,5 @@
 ﻿using PokeNet.Application.DTO.External;
+using PokeNet.Application.DTO.Request;
 using PokeNet.Application.DTO.Response;
 using PokeNet.Application.Services;
 using PokeNet.Domain.Entities;
@@ -14,12 +15,10 @@ namespace PokeNet.Application.UseCase
             _api = api;
         }
 
-        public async Task<PagedResponse<PokemonListaResponse>> BuscarTodos(int page,int pageSize,string? search)
+        public async Task<PagedResponse<PokemonListaResponse>> BuscarTodos(PokemonFilterRequest filter)
         {
-            return await _api.BuscarTodos(page, pageSize, search);
+            return await _api.BuscarTodos(filter);
         }
-
-
 
 
         public async Task<PokemonApiDetailResponse?> BuscarPokemon(string nomeOuNumero)

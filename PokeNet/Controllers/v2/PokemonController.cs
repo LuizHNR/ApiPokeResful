@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PokeNet.Application.DTO.Request;
 using PokeNet.Application.UseCase;
 
 namespace PokeNet.Controllers.v2
@@ -22,10 +23,26 @@ namespace PokeNet.Controllers.v2
         /// Busca todos os Pokemons.
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1,[FromQuery] int pageSize = 50,[FromQuery] string? search = null)
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 50,
+            [FromQuery] string? search = null,
+            [FromQuery] string? gen = null,
+            [FromQuery] string? types = null,
+            [FromQuery] string? order = null
+        )
         {
-            var result = await _useCase.BuscarTodos(page, pageSize, search);
+            var filter = new PokemonFilterRequest
+            {
+                Page = page,
+                PageSize = pageSize,
+                Search = search,
+                Order = order,
+                Generations = gen?.Split(',').Select(int.Parse).ToList() ?? new(),
+                Types = types?.Split(',').Select(t => t.ToLower()).ToList() ?? new()
+            };
 
+            var result = await _useCase.BuscarTodos(filter);
 
             return Ok(new
             {
@@ -33,19 +50,10 @@ namespace PokeNet.Controllers.v2
                 result.PageSize,
                 result.TotalItems,
                 result.TotalPages,
-                items = result.Items.Select(p => new
-                {
-                    p.Numero,
-                    p.Nome,
-                    p.Tipos,
-                    p.Sprite,
-                    links = new
-                    {
-                        self = Url.Action(nameof(GetPokemon), new { nomeOuNumero = p.Numero })
-                    }
-                })
+                items = result.Items
             });
         }
+
 
 
 
