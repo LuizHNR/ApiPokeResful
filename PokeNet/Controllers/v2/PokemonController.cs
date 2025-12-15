@@ -22,28 +22,31 @@ namespace PokeNet.Controllers.v2
         /// Busca todos os Pokemons.
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1,[FromQuery] int pageSize = 50)
         {
-            var lista = await _useCase.BuscarTodos();
-
-            var result = lista.Select(p => new
-            {
-                p.Numero,
-                p.Nome,
-                p.Tipos,
-                p.Sprite,
-                links = new
-                {
-                    self = Url.Action(nameof(GetPokemon), new { nomeOuNumero = p.Numero })
-                }
-            });
+            var result = await _useCase.BuscarTodos(page, pageSize);
 
             return Ok(new
             {
-                totalItems = lista.Count(),
-                items = result
+                result.Page,
+                result.PageSize,
+                result.TotalItems,
+                result.TotalPages,
+                items = result.Items.Select(p => new
+                {
+                    p.Numero,
+                    p.Nome,
+                    p.Tipos,
+                    p.Sprite,
+                    links = new
+                    {
+                        self = Url.Action(nameof(GetPokemon), new { nomeOuNumero = p.Numero })
+                    }
+                })
             });
         }
+
+
 
 
 

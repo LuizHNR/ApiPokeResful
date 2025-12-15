@@ -33,42 +33,51 @@ namespace PokeNet.Application.Services
         // ────────────────────────────────────────────
         // Buscar TODOS os pokemons (3000+) COM CACHE
         // ────────────────────────────────────────────
-        public async Task<List<PokemonListaResponse>> BuscarTodos()
+        public async Task<PagedResponse<PokemonListaResponse>> BuscarTodos(int page = 1,int pageSize = 50)
         {
-            return await GetOrCreateAsync(
-                "todos_pokemons_cache",
-                TimeSpan.FromHours(24),
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 20;
+            if (pageSize > 100) pageSize = 100;
+
+            var offset = (page - 1) * pageSize;
+
+            var list = await GetOrCreateAsync(
+                $"pokemon_page_{page}_{pageSize}",
+                TimeSpan.FromMinutes(30),
                 async () =>
-                {
-                    var document = await _http.GetFromJsonAsync<JsonDocument>("pokemon?limit=3000");
-                    var results = document.RootElement.GetProperty("results").EnumerateArray();
-
-                    var lista = new List<PokemonListaResponse>();
-
-                    foreach (var item in results)
-                    {
-                        var name = item.GetProperty("name").GetString()!;
-                        var url = item.GetProperty("url").GetString()!;
-                        int id = int.Parse(url.TrimEnd('/').Split('/').Last());
-
-                        var detalhe = await BuscarPokemonDetalhe(id);
-                        if (detalhe == null) continue;
-
-                        var finalName = char.ToUpper(name[0]) + name[1..];
-
-                        lista.Add(new PokemonListaResponse
-                        {
-                            Numero = id,
-                            Nome = finalName,
-                            Tipos = detalhe.Types.Select(t => t.Type.Name).ToList(),
-                            Sprite = detalhe.Sprites
-                        });
-                    }
-
-                    return lista;
-                }
+                    await _http.GetFromJsonAsync<PokeApiListResponse>(
+                        $"pokemon?offset={offset}&limit={pageSize}"
+                    )
             );
+
+            var items = new List<PokemonListaResponse>();
+
+            foreach (var item in list.Results)
+            {
+                int id = int.Parse(item.Url.TrimEnd('/').Split('/').Last());
+
+                var detalhe = await BuscarPokemonDetalhe(id);
+                if (detalhe == null) continue;
+
+                items.Add(new PokemonListaResponse
+                {
+                    Numero = id,
+                    Nome = Capitalizar(item.Name),
+                    Tipos = detalhe.Types.Select(t => t.Type.Name).ToList(),
+                    Sprite = detalhe.Sprites
+                });
+            }
+
+            return new PagedResponse<PokemonListaResponse>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = list.Count,
+                TotalPages = (int)Math.Ceiling(list.Count / (double)pageSize),
+                Items = items
+            };
         }
+
 
         // Cache do detalhe do Pokémon
         private async Task<PokemonApiDetail?> BuscarPokemonDetalhe(int id)

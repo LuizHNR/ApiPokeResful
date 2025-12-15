@@ -10,4 +10,22 @@ namespace PokeNet.Application.DTO.Response
 
         public PokemonSprite Sprite { get; set; } = new();
     }
+
+    public class PagedResponse<T>
+    {
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+
+        public int TotalItems { get; set; }
+        public int TotalPages { get; set; }
+
+        public List<T> Items { get; set; } = new();
+    }
+
+    public class PokeApiListResponse
+    {
+        public int Count { get; set; }
+        public List<NamedAPIResource> Results { get; set; } = new();
+    }
+
 }
