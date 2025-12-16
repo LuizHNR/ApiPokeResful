@@ -30,6 +30,8 @@ namespace PokeNet.Application.UseCase
 
             var multipliers = await _api.ObterFraquezasEVantagens(pokemon.Tipos);
 
+            var totalBaseStatus = pokemon.Stats.Sum(s => s.Valor);
+
             return new PokemonApiDetailResponse
             {
                 Numero = pokemon.Numero,
@@ -44,6 +46,7 @@ namespace PokeNet.Application.UseCase
                 Multipliers = multipliers,
                 Evolucoes = pokemon.Evolucoes,
                 Sprite = pokemon.Sprites,
+                BaseStatus = totalBaseStatus,
                 Stats = pokemon.Stats
             };
         }

@@ -17,7 +17,7 @@ namespace PokeNet.Domain.Entities
         public List<PokemonEvolucaoDTO> Evolucoes { get; set; } = new();
 
         public PokemonSprite Sprites { get; set; } = new();
-
+        public long BaseStatus { get; set; }
         public List<PokemonStatResponse> Stats { get; set; } = new();
 
     }

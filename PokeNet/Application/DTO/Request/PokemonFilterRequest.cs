@@ -16,4 +16,18 @@
         // Ordenação
         public string? Order { get; set; }
     }
+
+    public class PokemonListItem
+    {
+        public NamedAPIResource Item { get; set; } = null!;
+        public int Id { get; set; }
+    }
+
+
+    public class PokemonListWithStats
+    {
+        public PokemonListItem Item { get; set; } = null!;
+        public int TotalStats { get; set; }
+    }
+
 }

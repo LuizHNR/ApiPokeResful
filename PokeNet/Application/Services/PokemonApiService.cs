@@ -18,13 +18,6 @@ namespace PokeNet.Application.Services
             _cache = cache;
         }
 
-        // DTO INTERNO PARA LISTAGEM
-        private class PokemonListItem
-        {
-            public NamedAPIResource Item { get; set; } = null!;
-            public int Id { get; set; }
-        }
-
         // ────────────────────────────────────────────
         // CACHE AUXILIAR
         // ────────────────────────────────────────────
@@ -128,14 +121,58 @@ namespace PokeNet.Application.Services
                 filtrados = temp;
             }
 
+
+            List<PokemonListWithStats>? listWithStats = null;
+
+            if (filter.Order is "statusAsc" or "statusDesc")
+            {
+                listWithStats = new List<PokemonListWithStats>();
+
+                foreach (var p in filtrados)
+                {
+                    var detalhe = await BuscarPokemonDetalhe(p.Id);
+                    if (detalhe == null) continue;
+
+                    int totalStats = detalhe.Stats.Sum(s => s.StatusBase);
+
+                    listWithStats.Add(new PokemonListWithStats
+                    {
+                        Item = p,
+                        TotalStats = totalStats
+                    });
+                }
+            }
+
+
+
             // ORDENAÇÃO
             filtrados = filter.Order switch
             {
-                "name_asc" => filtrados.OrderBy(x => x.Item.Name).ToList(),
-                "name_desc" => filtrados.OrderByDescending(x => x.Item.Name).ToList(),
-                "id_desc" => filtrados.OrderByDescending(x => x.Id).ToList(),
-                _ => filtrados.OrderBy(x => x.Id).ToList()
+                "nameAsc" =>
+                    filtrados.OrderBy(x => x.Item.Name).ToList(),
+
+                "nameDesc" =>
+                    filtrados.OrderByDescending(x => x.Item.Name).ToList(),
+
+                "idDesc" =>
+                    filtrados.OrderByDescending(x => x.Id).ToList(),
+
+                "statusAsc" =>
+                    listWithStats!
+                        .OrderBy(x => x.TotalStats)
+                        .Select(x => x.Item)
+                        .ToList(),
+
+                "statusDesc" =>
+                    listWithStats!
+                        .OrderByDescending(x => x.TotalStats)
+                        .Select(x => x.Item)
+                        .ToList(),
+
+                _ =>
+                    filtrados.OrderBy(x => x.Id).ToList()
             };
+
 
             int totalFiltrado = filtrados.Count;
 

@@ -18,6 +18,8 @@ namespace PokeNet.Application.DTO.Response
         public List<PokemonEvolucaoDTO> Evolucoes { get; set; } = new();
         public PokemonSprite Sprite { get; set; } = new();
 
+        public long BaseStatus { get; set; }
+
         public List<PokemonStatResponse> Stats { get; set; } = new();
 
     }
