@@ -22,6 +22,21 @@ namespace PokeNet.Application.DTO.Response
 
         public List<PokemonStatResponse> Stats { get; set; } = new();
 
+        public List<PokemonFormResponse> Formas { get; set; } = new();
+
+
+    }
+
+    public class PokemonFormResponse
+    {
+        public int Numero { get; set; }
+        public string Nome { get; set; } = "";
+        public bool IsDefault { get; set; }
+
+        public List<string> Tipos { get; set; } = new();
+        public PokemonSprite Sprite { get; set; } = new();
+
+        public long BaseStatus { get; set; }
     }
 
 }

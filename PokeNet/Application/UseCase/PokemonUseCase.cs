@@ -29,8 +29,9 @@ namespace PokeNet.Application.UseCase
                 return null;
 
             var multipliers = await _api.ObterFraquezasEVantagens(pokemon.Tipos);
-
             var totalBaseStatus = pokemon.Stats.Sum(s => s.Valor);
+
+            var formas = await _api.BuscarFormasPorSpecies(pokemon.SpeciesId);
 
             return new PokemonApiDetailResponse
             {
@@ -47,9 +48,12 @@ namespace PokeNet.Application.UseCase
                 Evolucoes = pokemon.Evolucoes,
                 Sprite = pokemon.Sprites,
                 BaseStatus = totalBaseStatus,
-                Stats = pokemon.Stats
+                Stats = pokemon.Stats,
+                Formas = formas
             };
         }
+
+
 
 
         private string ConverterAltura(long alturaDm)

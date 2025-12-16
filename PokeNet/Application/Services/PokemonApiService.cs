@@ -240,12 +240,17 @@ namespace PokeNet.Application.Services
                         if (detalhe == null)
                             return null;
 
-                        var evolucoes = await BuscarEvolucoes(detalhe.Id);
-                        var habilidades = await BuscarHabilidades(detalhe);
-                        var (descricao, eggGroups) = await BuscarDescricaoEEggGroups(detalhe.Id);
+                        // ID DA ESPÉCIE BASE (FUNCIONA PARA FORMAS)
+                        int speciesId = int.Parse(
+                            detalhe.Species.Url.TrimEnd('/').Split('/').Last()
+                        );
 
-                        var baseName = detalhe.Name.Split('-')[0];
-                        var finalName = char.ToUpper(baseName[0]) + baseName[1..];
+                        var evolucoes = await BuscarEvolucoes(speciesId);
+                        var habilidades = await BuscarHabilidades(detalhe);
+                        var (descricao, eggGroups) = await BuscarDescricaoEEggGroups(speciesId);
+
+                        // NÃO QUEBRA MAIS FORMAS
+                        var finalName = Capitalizar(detalhe.Name.Replace("-", " "));
 
                         string cryUrl =
                             $"https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/{detalhe.Id}.ogg";
@@ -263,6 +268,7 @@ namespace PokeNet.Application.Services
                             Tipos = detalhe.Types.Select(t => t.Type.Name).ToList(),
                             Evolucoes = evolucoes,
                             Sprites = detalhe.Sprites,
+                            SpeciesId = speciesId,
                             Stats = detalhe.Stats.Select(s => new PokemonStatResponse
                             {
                                 Nome = s.Stat.Name,
@@ -277,6 +283,52 @@ namespace PokeNet.Application.Services
                 }
             );
         }
+
+        public async Task<List<PokemonFormResponse>> BuscarFormasPorSpecies(int speciesId)
+        {
+            return await GetOrCreateAsync(
+                $"pokemon_forms_{speciesId}",
+                TimeSpan.FromHours(24),
+                async () =>
+                {
+                    var species = await _http.GetFromJsonAsync<PokemonSpeciesApi>(
+                        $"pokemon-species/{speciesId}"
+                    );
+
+                    if (species == null || !species.Varieties.Any())
+                        return new();
+
+                    var forms = new List<PokemonFormResponse>();
+
+                    foreach (var variety in species.Varieties)
+                    {
+                        if (variety.IsDefault)
+                            continue; // remove a forma base
+
+                        var detail = await _http.GetFromJsonAsync<PokemonApiDetail>(
+                            $"pokemon/{variety.Pokemon.Name}"
+                        );
+
+                        if (detail == null) continue;
+
+                        forms.Add(new PokemonFormResponse
+                        {
+                            Numero = detail.Id,
+                            Nome = Capitalizar(detail.Name.Replace("-", " ")),
+                            IsDefault = variety.IsDefault,
+                            Tipos = detail.Types.Select(t => t.Type.Name).ToList(),
+                            Sprite = detail.Sprites,
+                            BaseStatus = detail.Stats.Sum(s => s.StatusBase)
+                        });
+                    }
+
+
+                    return forms;
+                }
+            );
+        }
+
+
 
         // ────────────────────────────────────────────
         // EVOLUÇÕES (COM CACHE)
@@ -308,26 +360,80 @@ namespace PokeNet.Application.Services
             );
         }
 
-        private async Task ExtrairEvolucoes(ChainLink link, List<PokemonEvolucaoDTO> lista)
+        private async Task ExtrairEvolucoes(ChainLink link,List<PokemonEvolucaoDTO> lista)
         {
-            string speciesUrl = link.Species.Url;
-            int numero = int.Parse(speciesUrl.TrimEnd('/').Split('/').Last());
-            int? minLevel = link.Evolution_Details.FirstOrDefault()?.Min_Level;
+            int numero = int.Parse(
+                link.Species.Url.TrimEnd('/').Split('/').Last()
+            );
 
-            var detalhe = await BuscarPokemonDetalhe(numero);
+            var detalhePokemon = await BuscarPokemonDetalhe(numero);
+            var evoDetail = link.Evolution_Details.FirstOrDefault();
+
+            string metodo = "";
+            string? detalhe = null;
+
+            if (evoDetail != null)
+            {
+                (metodo, detalhe) = MapearMetodoEvolucao(evoDetail);
+            }
 
             lista.Add(new PokemonEvolucaoDTO
             {
                 Numero = numero,
                 Nome = Capitalizar(link.Species.Name),
-                NivelParaEvoluir = minLevel,
-                Sprite = detalhe?.Sprites ?? new PokemonSprite(),
+
+                NivelParaEvoluir = evoDetail?.Min_Level, 
+                Metodo = metodo,
+                Detalhe = detalhe,
+
+                Sprite = detalhePokemon?.Sprites ?? new PokemonSprite(),
                 Links = new { self = $"/api/v2/pokemon/{numero}" }
             });
 
             foreach (var e in link.Evolves_To)
                 await ExtrairEvolucoes(e, lista);
         }
+
+
+
+
+        private (string metodo, string? detalhe) MapearMetodoEvolucao(EvolutionDetail evo)
+        {
+            return evo.Trigger.Name switch
+            {
+                "level-up" => (
+                    "Level",
+                    evo.Min_Level != null
+                        ? $"Nv. {evo.Min_Level}"
+                        : evo.Min_Happiness != null
+                            ? $"Felicidade {evo.Min_Happiness}+"
+                            : !string.IsNullOrEmpty(evo.Time_Of_Day)
+                                ? $"Durante a {evo.Time_Of_Day}"
+                                : null
+                ),
+
+                "use-item" => (
+                    "Item",
+                    evo.Item?.Name.Replace("-", " ")
+                ),
+
+                "trade" => (
+                    "Troca",
+                    evo.Held_Item != null
+                        ? $"Segurando {evo.Held_Item.Name.Replace("-", " ")}"
+                        : "Troca simples"
+                ),
+
+                _ => (
+                    evo.Trigger.Name,
+                    null
+                )
+            };
+        }
+
+
+
+
 
         private string Capitalizar(string nome)
         {
@@ -555,5 +661,9 @@ namespace PokeNet.Application.Services
                 ChanceEfeito = move.EffectChance
             };
         }
+
+
+        
+
     }
 }

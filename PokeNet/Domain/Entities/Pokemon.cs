@@ -20,5 +20,8 @@ namespace PokeNet.Domain.Entities
         public long BaseStatus { get; set; }
         public List<PokemonStatResponse> Stats { get; set; } = new();
 
+        public int SpeciesId { get; set; }
+
+
     }
 }

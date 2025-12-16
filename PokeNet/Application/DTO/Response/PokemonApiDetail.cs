@@ -6,19 +6,22 @@ namespace PokeNet.Application.DTO.External
     {
         public int Id { get; set; }
         public string Name { get; set; } = "";
+
+        public NamedAPIResource Species { get; set; } = new();
+
         public int Height { get; set; }
         public int Weight { get; set; }
+
         public List<PokemonAbility> Abilities { get; set; } = new();
         public List<PokemonTypeSlot> Types { get; set; } = new();
+
         public List<PokemonEvolucaoDTO> Evolucoes { get; set; } = new();
         public PokemonSprite Sprites { get; set; } = new();
 
         public List<PokemonStatsSlot> Stats { get; set; } = new();
-
         public List<PokemonMoveSlot> Moves { get; set; } = new();
-
-
     }
+
 
     public class PokemonTypeSlot
     {
@@ -102,12 +105,25 @@ namespace PokeNet.Application.DTO.External
 
     public class PokemonSpeciesApi
     {
+        [JsonPropertyName("varieties")]
+        public List<PokemonVariety> Varieties { get; set; } = new();
+
         [JsonPropertyName("flavor_text_entries")]
         public List<FlavorTextEntry> FlavorTextEntries { get; set; } = new();
 
         [JsonPropertyName("egg_groups")]
         public List<EggGroupEntry> EggGroups { get; set; } = new();
     }
+
+    public class PokemonVariety
+    {
+        [JsonPropertyName("is_default")]
+        public bool IsDefault { get; set; }
+
+        [JsonPropertyName("pokemon")]
+        public NamedAPIResource Pokemon { get; set; } = new();
+    }
+
 
     public class FlavorTextEntry
     {
