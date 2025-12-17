@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PokeNet")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f447c49314ae1b1b78ff634ad41f1299cd305f3d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+56625ef64510281a42a4373d472067a6c1da96e5")]
 [assembly: System.Reflection.AssemblyProductAttribute("PokeNet")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PokeNet")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

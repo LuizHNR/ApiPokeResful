@@ -7,6 +7,7 @@
 
     public class VersionGroupDetailResponse
     {
+        public int Id { get; set; } 
         public string Name { get; set; } = "";
         public NamedApiResource Generation { get; set; } = new();
         public List<NamedApiResource> Pokedexes { get; set; } = new();

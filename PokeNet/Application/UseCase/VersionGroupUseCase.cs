@@ -67,6 +67,7 @@ namespace PokeNet.Application.UseCases
 
                     return new VersionGroupResponse
                     {
+                        id = detail.Id,
                         Nome = detail.Name,
                         Geracao = detail.Generation?.Name ?? "",
                         Pokedexes = detail.Pokedexes.Select(p => p.Name).ToList(),
