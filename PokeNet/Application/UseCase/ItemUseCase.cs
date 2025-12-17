@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using PokeNet.Application.DTO.Response;
 using PokeNet.Application.DTO.External;
+using PokeNet.Application.DTO.Request;
+using PokeNet.Application.DTO.Response;
 using System.Net.Http.Json;
 
 namespace PokeNet.Application.UseCases
@@ -31,30 +32,77 @@ namespace PokeNet.Application.UseCases
             return url.TrimEnd('/').Split('/').Last();
         }
 
-        public async Task<List<ItemResponse>> BuscarTodos()
+
+
+
+
+        public async Task<PagedResponse<ItemResponse>> BuscarTodos(ItemFilterRequest filter)
         {
-            return await GetOrCreateAsync(
+            int page = filter.Page < 1 ? 1 : filter.Page;
+            int pageSize = filter.PageSize is < 1 or > 100 ? 50 : filter.PageSize;
+
+            var list = await GetOrCreateAsync(
                 "itens_todos_cache",
                 TimeSpan.FromHours(24),
                 async () =>
-                {
-                    var list = await _http.GetFromJsonAsync<ItemListResponse>("item?limit=100000&offset=0");
-
-                    if (list == null || list.Results == null)
-                        return new List<ItemResponse>();
-
-                    var tasks = list.Results.Select(async item =>
-                    {
-                        var id = ExtractIdFromUrl(item.Url);
-                        return await BuscarItem(id);
-                    });
-
-                    return (await Task.WhenAll(tasks))
-                        .Where(x => x != null)
-                        .ToList()!;
-                }
+                    await _http.GetFromJsonAsync<ItemListResponse>(
+                        "item?limit=100000&offset=0"
+                    )
             );
+
+            if (list?.Results == null)
+                return new PagedResponse<ItemResponse>();
+
+            // Base
+            var query = list.Results
+                .Select(p => new ListItemFilter
+                {
+                    Item = p,
+                    Id = int.Parse(ExtractIdFromUrl(p.Url))
+                });
+
+            // FILTRO
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                var search = filter.Search.Trim().ToLower();
+
+                query = query.Where(x =>
+                    x.Item.Name.Contains(search) ||
+                    x.Id.ToString() == search
+                );
+            }
+
+            var totalItems = query.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            // PAGINAÇÃO
+            var paged = query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // Busca detalhes só da página
+            var tasks = paged.Select(x =>
+                BuscarItem(x.Id.ToString())
+            );
+
+            var items = (await Task.WhenAll(tasks))
+                .Where(x => x != null)
+                .ToList()!;
+
+            return new PagedResponse<ItemResponse>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                Items = items
+            };
         }
+
+
+
+
 
         public async Task<ItemResponse?> BuscarItem(string nomeOuId)
         {

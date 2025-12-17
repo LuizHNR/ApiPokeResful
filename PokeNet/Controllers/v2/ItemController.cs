@@ -1,6 +1,8 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using PokeNet.Application.DTO.Request;
 using PokeNet.Application.UseCases;
+using System;
 
 namespace PokeNet.API.Controllers
 {
@@ -17,12 +19,38 @@ namespace PokeNet.API.Controllers
         }
 
 
+
+
+        /// <summary>
+        /// Busca um todos os itens.
+        /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 50,
+            [FromQuery] string? search = null
+            )
         {
-            var itens = await _useCase.BuscarTodos();
-            return Ok(itens);
+            var filter = new ItemFilterRequest
+            {
+                Page = page,
+                PageSize = pageSize,
+                Search = search
+            };
+
+
+            var result = await _useCase.BuscarTodos(filter);
+
+            return Ok(new
+            {
+                result.Page,
+                result.PageSize,
+                result.TotalItems,
+                result.TotalPages,
+                items = result.Items
+            });
         }
+
 
 
 
