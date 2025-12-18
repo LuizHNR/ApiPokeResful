@@ -4,7 +4,9 @@ namespace PokeNet.Application.DTO.Response
 {
     public class PokedexPokemonResponse
     {
-        public int Numero { get; set; }
+        public int NumeroRegional { get; set; } // 1
+
+        public int NumeroGlobal { get; set; }   // 252
         public string Nome { get; set; } = "";
         public List<string> Tipos { get; set; } = new();
 

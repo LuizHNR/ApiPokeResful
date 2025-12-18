@@ -59,22 +59,31 @@ namespace PokeNet.Application.UseCases
 
                     foreach (var entry in dto.Pokemon_Entries)
                     {
+                        int pokemonId = int.Parse(
+                            entry.Pokemon_Species.Url.TrimEnd('/').Split('/').Last()
+                        );
 
-                        var detalhe = await _pokemonApi.BuscarPokemon(entry.Entry_Number.ToString());
+                        var detalhe = await _pokemonApi.BuscarPokemon(pokemonId.ToString());
 
                         if (detalhe == null)
                             continue;
 
                         response.Pokemons.Add(new PokedexPokemonResponse
                         {
-                            Numero = entry.Entry_Number,
-                            Nome = char.ToUpper(entry.Pokemon_Species.Name[0])
-                                   + entry.Pokemon_Species.Name[1..],
+                            NumeroRegional = entry.Entry_Number,
+
+                            // Número REAL do Pokémon
+                            NumeroGlobal = pokemonId,
+
+                            // Nome correto
+                            Nome = char.ToUpper(entry.Pokemon_Species.Name[0]) +
+                                   entry.Pokemon_Species.Name[1..],
 
                             Tipos = detalhe.Tipos,
                             Sprite = detalhe.Sprites
                         });
                     }
+
 
 
                     return response;
