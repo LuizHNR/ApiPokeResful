@@ -111,6 +111,11 @@
         "Name": "idOuNome",
         "Type": "System.String",
         "IsRequired": true
+      },
+      {
+        "Name": "search",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []

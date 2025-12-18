@@ -33,18 +33,15 @@ namespace PokeNet.Application.UseCases
             return value;
         }
 
-        private string ExtractIdFromUrl(string url) =>
-            url.TrimEnd('/').Split('/').Last();
 
-        public async Task<PokedexResponse?> Buscar(string nomeOuId)
+        public async Task<PokedexResponse?> Buscar(string nomeOuId, string? search)
         {
             return await GetOrCreateAsync(
-                $"pokedex_{nomeOuId}",
+                $"pokedex_{nomeOuId}_search_{search?.ToLower() ?? "all"}",
                 TimeSpan.FromHours(24),
                 async () =>
                 {
                     var dto = await _http.GetFromJsonAsync<PokedexDetailDto>($"pokedex/{nomeOuId}");
-
                     if (dto == null) return null;
 
                     var descricao = dto.Descriptions?
@@ -54,7 +51,8 @@ namespace PokeNet.Application.UseCases
                     var response = new PokedexResponse
                     {
                         Nome = dto.Name,
-                        Descricao = descricao
+                        Descricao = descricao,
+                        Pokemons = new List<PokedexPokemonResponse>()
                     };
 
                     foreach (var entry in dto.Pokemon_Entries)
@@ -64,31 +62,38 @@ namespace PokeNet.Application.UseCases
                         );
 
                         var detalhe = await _pokemonApi.BuscarPokemon(pokemonId.ToString());
-
-                        if (detalhe == null)
-                            continue;
+                        if (detalhe == null) continue;
 
                         response.Pokemons.Add(new PokedexPokemonResponse
                         {
                             NumeroRegional = entry.Entry_Number,
-
-                            // Número REAL do Pokémon
-                            NumeroGlobal = pokemonId,
-
-                            // Nome correto
+                            Numero = pokemonId,
                             Nome = char.ToUpper(entry.Pokemon_Species.Name[0]) +
                                    entry.Pokemon_Species.Name[1..],
-
                             Tipos = detalhe.Tipos,
                             Sprite = detalhe.Sprites
                         });
                     }
 
+                    //FILTRO 
+                    if (!string.IsNullOrWhiteSpace(search))
+                    {
+                        var term = search.Trim().ToLower();
 
+                        response.Pokemons = response.Pokemons
+                            .Where(p =>
+                                p.Nome.ToLower().Contains(term) ||
+                                p.Numero.ToString() == term ||
+                                p.NumeroRegional.ToString() == term
+                            )
+                            .ToList();
+                    }
 
                     return response;
-                });
+                }
+            );
         }
+
 
     }
 }

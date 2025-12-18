@@ -33,9 +33,6 @@ namespace PokeNet.Application.UseCases
         }
 
 
-
-
-
         public async Task<PagedResponse<ItemResponse>> BuscarTodos(ItemFilterRequest filter)
         {
             int page = filter.Page < 1 ? 1 : filter.Page;

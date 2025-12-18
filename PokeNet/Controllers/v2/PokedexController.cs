@@ -16,15 +16,18 @@ namespace PokeNet.Api.Controllers
             _useCase = useCase;
         }
 
+
+
         [HttpGet("{idOuNome}")]
-        public async Task<IActionResult> Get(string idOuNome)
+        public async Task<IActionResult> Get(string idOuNome, [FromQuery] string? search = null)
         {
-            var result = await _useCase.Buscar(idOuNome);
+            var result = await _useCase.Buscar(idOuNome, search);
 
             if (result == null)
                 return NotFound();
 
             return Ok(result);
         }
+
     }
 }

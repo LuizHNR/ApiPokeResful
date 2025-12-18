@@ -6,7 +6,7 @@ namespace PokeNet.Application.DTO.Response
     {
         public int NumeroRegional { get; set; } // 1
 
-        public int NumeroGlobal { get; set; }   // 252
+        public int Numero { get; set; }   // 252
         public string Nome { get; set; } = "";
         public List<string> Tipos { get; set; } = new();
 
