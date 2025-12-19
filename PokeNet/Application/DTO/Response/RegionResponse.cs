@@ -2,7 +2,7 @@
 {
     public class RegionPokemonEncounterResponse
     {
-        public string Pokemon { get; set; } = "";
+        public RegionPokemonResponse Pokemon { get; set; } = null!;
         public int Rate { get; set; }
         public int BaseScore { get; set; }
     }
@@ -18,4 +18,14 @@
         public string Nome { get; set; } = "";
         public List<RegionLocationResponse> Rotas { get; set; } = new();
     }
+
+
+    public class RegionPokemonResponse
+    {
+        public int Numero { get; set; }
+        public string Nome { get; set; } = "";
+        public List<string> Tipos { get; set; } = new();
+        public object Sprite { get; set; } = null!;
+    }
+
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using PokeNet.Application.DTO.Response;
+using PokeNet.Application.Services;
 using System.Net.Http.Json;
 
 namespace PokeNet.Application.UseCases
@@ -9,10 +10,14 @@ namespace PokeNet.Application.UseCases
         private readonly HttpClient _http;
         private readonly IMemoryCache _cache;
 
-        public RegionUseCase(IHttpClientFactory factory, IMemoryCache cache)
+        private readonly PokemonApiService _pokemonApi;
+
+        public RegionUseCase(IHttpClientFactory factory, IMemoryCache cache, PokemonApiService pokemonApi)
         {
             _http = factory.CreateClient("PokeApi");
             _cache = cache;
+            _pokemonApi = pokemonApi;
+
         }
 
         private async Task<T> GetOrCreateAsync<T>(string key, TimeSpan ttl, Func<Task<T>> factory)
@@ -74,12 +79,22 @@ namespace PokeNet.Application.UseCases
                                     var version = enc.VersionDetails.FirstOrDefault();
                                     var encounterDetail = version?.EncounterDetails.FirstOrDefault();
 
+                                    var pokemonDetalhe = await _pokemonApi.BuscarPokemon(enc.Pokemon.Name);
+                                    if (pokemonDetalhe == null) continue;
+
                                     rota.Encounters.Add(new RegionPokemonEncounterResponse
                                     {
-                                        Pokemon = enc.Pokemon.Name,
-                                        Rate = encounterDetail?.Chance ?? 0,     // chance real da PokeAPI
-                                        BaseScore = version?.MaxChance ?? 0      // max_chance real
+                                        Pokemon = new RegionPokemonResponse
+                                        {
+                                            Numero = pokemonDetalhe.Numero,
+                                            Nome = pokemonDetalhe.Nome,
+                                            Tipos = pokemonDetalhe.Tipos,
+                                            Sprite = pokemonDetalhe.Sprites
+                                        },
+                                        Rate = encounterDetail?.Chance ?? 0,
+                                        BaseScore = version?.MaxChance ?? 0
                                     });
+
                                 }
                             }
                         }
