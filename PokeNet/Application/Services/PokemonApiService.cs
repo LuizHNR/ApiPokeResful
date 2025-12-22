@@ -561,14 +561,17 @@ namespace PokeNet.Application.Services
         // ────────────────────────────────────────────
         // MOVIMENTOS (COM CACHE)
         // ────────────────────────────────────────────
-        public async Task<PokemonMovesResponse?> BuscarTodosMovimentos(string nomeOuNumero)
+
+        private async Task<PokemonMovesResponse?> BuscarTodosMovimentosPokemon(string nomeOuNumero)
         {
             return await GetOrCreateAsync(
-                $"moves_{nomeOuNumero}",
+                $"moves_raw_{nomeOuNumero}",
                 TimeSpan.FromHours(24),
                 async () =>
                 {
-                    var detalhe = await _http.GetFromJsonAsync<PokemonApiDetail>($"pokemon/{nomeOuNumero.ToLower()}");
+                    var detalhe = await _http.GetFromJsonAsync<PokemonApiDetail>(
+                        $"pokemon/{nomeOuNumero.ToLower()}"
+                    );
                     if (detalhe == null) return null;
 
                     var resposta = new PokemonMovesResponse();
@@ -587,25 +590,19 @@ namespace PokeNet.Application.Services
                         foreach (var version in moveSlot.Version_Group_Details)
                         {
                             var metodo = version.MoveLearnMethod.Name;
-                            var level = version.Level;
 
                             switch (metodo)
                             {
                                 case "level-up":
-                                    var efeito = moveDetail.EffectEntries.FirstOrDefault(e => e.Language.Name == "en");
-
                                     resposta.LevelUp.Add(new PokemonLevelUpMove
                                     {
                                         Nome = moveName,
-                                        Level = level,
+                                        Level = version.Level,
                                         Tipo = moveDetail.type.Name,
                                         Categoria = moveDetail.DamageClass.Name,
                                         Poder = moveDetail.power,
                                         Accuracy = moveDetail.accuracy,
-                                        PP = moveDetail.pp,
-                                        Efeito = efeito?.Effect ?? "",
-                                        EfeitoCurto = efeito?.ShortEffect ?? "",
-                                        ChanceEfeito = moveDetail.EffectChance
+                                        PP = moveDetail.pp
                                     });
                                     break;
 
@@ -620,10 +617,6 @@ namespace PokeNet.Application.Services
                                 case "egg":
                                     resposta.Egg.Add(MapearMove(moveName, moveDetail));
                                     break;
-
-                                default:
-                                    resposta.Outros.Add(moveName);
-                                    break;
                             }
                         }
                     }
@@ -637,12 +630,62 @@ namespace PokeNet.Application.Services
                     resposta.Machine = resposta.Machine.Distinct().ToList();
                     resposta.Tutor = resposta.Tutor.Distinct().ToList();
                     resposta.Egg = resposta.Egg.Distinct().ToList();
-                    resposta.Outros = resposta.Outros.Distinct().ToList();
 
                     return resposta;
                 }
             );
         }
+
+
+
+
+        public async Task<PokemonMovesResponse?> BuscarTodosMovimentos(string nomeOuNumero,MoveFilterRequest filter)
+        {
+            var raw = await BuscarTodosMovimentosPokemon(nomeOuNumero);
+            if (raw == null) return null;
+
+            // CLONE para não sujar o cache
+            var resposta = new PokemonMovesResponse
+            {
+                LevelUp = raw.LevelUp.ToList(),
+                Machine = raw.Machine.ToList(),
+                Tutor = raw.Tutor.ToList(),
+                Egg = raw.Egg.ToList(),
+                Outros = raw.Outros.ToList()
+            };
+
+            // ───── FILTRO POR MÉTODO ─────
+            if (filter.Methods.Any())
+            {
+                if (!filter.Methods.Contains("level-up")) resposta.LevelUp.Clear();
+                if (!filter.Methods.Contains("machine")) resposta.Machine.Clear();
+                if (!filter.Methods.Contains("tutor")) resposta.Tutor.Clear();
+                if (!filter.Methods.Contains("egg")) resposta.Egg.Clear();
+            }
+
+            // ───── FILTRO POR TIPO ─────
+            if (filter.Types.Any())
+            {
+                resposta.LevelUp = resposta.LevelUp
+                    .Where(m => filter.Types.Contains(m.Tipo))
+                    .ToList();
+
+                resposta.Machine = resposta.Machine
+                    .Where(m => filter.Types.Contains(m.Tipo))
+                    .ToList();
+
+                resposta.Tutor = resposta.Tutor
+                    .Where(m => filter.Types.Contains(m.Tipo))
+                    .ToList();
+
+                resposta.Egg = resposta.Egg
+                    .Where(m => filter.Types.Contains(m.Tipo))
+                    .ToList();
+            }
+
+            return resposta;
+        }
+
 
         private PokemonMoveDetail MapearMove(string nome, MoveDetailResponse move)
         {

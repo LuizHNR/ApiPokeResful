@@ -96,10 +96,11 @@ namespace PokeNet.Application.UseCase
 
 
 
-        public async Task<PokemonMovesResponse?> BuscarMovimentos(string nomeOuNumero)
+        public async Task<PokemonMovesResponse?> BuscarMovimentos(string nomeOuNumero,MoveFilterRequest filter)
         {
-            return await _api.BuscarTodosMovimentos(nomeOuNumero);
+            return await _api.BuscarTodosMovimentos(nomeOuNumero, filter);
         }
+
 
     }
 }

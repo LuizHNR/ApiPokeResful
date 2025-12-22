@@ -189,6 +189,16 @@
         "Name": "nomeOuNumero",
         "Type": "System.String",
         "IsRequired": true
+      },
+      {
+        "Name": "method",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "types",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
